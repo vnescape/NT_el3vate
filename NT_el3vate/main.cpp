@@ -1,13 +1,15 @@
 #include <iostream>
 #include <Windows.h>
+//#include <ntstatus.h>
 
 #define MapPhysicalMemoryToLinearSpace 0xFA002EE8
 #define UnmapPhysicalMemory 0xFA002EEC
+#define STATUS_SUCCESS 0x0
 
 int main(char argc, char** argv)
 {
     HANDLE device = INVALID_HANDLE_VALUE;
-    BOOL status = FALSE;
+    NTSTATUS status = FALSE;
     DWORD bytesReturned = 0;
     CHAR inBuffer[64] = { 0 };
     CHAR outBuffer[64] = { 0 };
@@ -22,18 +24,19 @@ int main(char argc, char** argv)
 
     printf("[ ] Calling MapPhysicalMemoryToLinearSpace 0x%X\n", MapPhysicalMemoryToLinearSpace);
     status = DeviceIoControl(device, MapPhysicalMemoryToLinearSpace, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
-    printf("[*] MapPhysicalMemoryToLinearSpace 0x%X called\n", MapPhysicalMemoryToLinearSpace);
+    if (status != STATUS_SUCCESS) {
+        printf("MapPhysicalMemoryToLinearSpace failed with %X", status);
+    }
+    printf("[*] MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer[0], bytesReturned);
 
     system("pause");
 
-    device = INVALID_HANDLE_VALUE;
-    status = FALSE;
-    bytesReturned = 0;
-    ZeroMemory(inBuffer, 64);
-    ZeroMemory(outBuffer, 64);
-
+    printf("[ ] Calling MapPhysicalMemoryToLinearSpace 0x%X\n", UnmapPhysicalMemory);
     status = DeviceIoControl(device, UnmapPhysicalMemory, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
+    if (status != STATUS_SUCCESS) {
+        printf("UnmapPhysicalMemory failed with %X", status);
+    }
 
     system("pause");
 
