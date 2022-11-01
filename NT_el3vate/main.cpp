@@ -30,8 +30,8 @@ int main(char argc, char** argv)
     device = INVALID_HANDLE_VALUE;
     status = FALSE;
     bytesReturned = 0;
-    inBuffer[64] = { 0 };
-    outBuffer[64] = { 0 };
+    ZeroMemory(inBuffer, 64);
+    ZeroMemory(outBuffer, 64);
 
     status = DeviceIoControl(device, UnmapPhysicalMemory, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
 
