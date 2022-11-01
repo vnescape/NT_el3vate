@@ -35,6 +35,8 @@ int main(char argc, char** argv)
 
     status = DeviceIoControl(device, UnmapPhysicalMemory, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
 
+    system("pause");
+
     CloseHandle(device);
     return EXIT_SUCCESS;
 }
