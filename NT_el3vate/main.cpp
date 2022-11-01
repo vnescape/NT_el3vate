@@ -39,8 +39,8 @@ int main(char argc, char** argv)
     printf("[*] MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer[0], bytesReturned);
 
-    printf("[*] inBuffer PhysicalBaseAddress: %p", inBuffer.PhysicalBaseAddress);
-    printf("[*] inBuffer SectionHandle: %p", inBuffer.SectionHandle);
+    printf("[*] inBuffer PhysicalBaseAddress: %p\n", inBuffer.PhysicalBaseAddress);
+    printf("[*] inBuffer SectionHandle: %p\n", inBuffer.SectionHandle);
 
     system("pause");
 
