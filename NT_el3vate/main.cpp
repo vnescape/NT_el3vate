@@ -38,12 +38,12 @@ int main(char argc, char** argv)
     CHAR inBuffer2[64] = { 0 };
     CHAR outBuffer2[64] = { 0 };
 
-    printf("[ ] Calling MapPhysicalMemoryToLinearSpace 0x%X\n", UnmapPhysicalMemory);
+    printf("[ ] Calling UnmapPhysicalMemory 0x%X\n", UnmapPhysicalMemory);
     status = DeviceIoControl(device2, UnmapPhysicalMemory, inBuffer2, sizeof(inBuffer2), outBuffer2, sizeof(outBuffer2), &bytesReturned2, (LPOVERLAPPED)NULL);
     if (status != STATUS_SUCCESS) {
         printf("[!] UnmapPhysicalMemory failed with %X\n", status);
     }
-    printf("[*] MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
+    printf("[*] UnmapPhysicalMemory 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer[0], bytesReturned);
 
     system("pause");
