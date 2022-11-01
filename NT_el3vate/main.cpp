@@ -44,7 +44,7 @@ int main(char argc, char** argv)
         printf("[!] UnmapPhysicalMemory failed with %X\n", status);
     }
     printf("[*] UnmapPhysicalMemory 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
-    printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer[0], bytesReturned);
+    printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer2[0], bytesReturned2);
 
     system("pause");
 
