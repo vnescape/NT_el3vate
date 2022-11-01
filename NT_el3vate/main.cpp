@@ -32,8 +32,14 @@ int main(char argc, char** argv)
 
     system("pause");
 
+    HANDLE device2 = INVALID_HANDLE_VALUE;
+    NTSTATUS status2 = FALSE;
+    DWORD bytesReturned2 = 0;
+    CHAR inBuffer2[64] = { 0 };
+    CHAR outBuffer2[64] = { 0 };
+
     printf("[ ] Calling MapPhysicalMemoryToLinearSpace 0x%X\n", UnmapPhysicalMemory);
-    status = DeviceIoControl(device, UnmapPhysicalMemory, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
+    status = DeviceIoControl(device2, UnmapPhysicalMemory, inBuffer2, sizeof(inBuffer2), outBuffer2, sizeof(outBuffer2), &bytesReturned2, (LPOVERLAPPED)NULL);
     if (status != STATUS_SUCCESS) {
         printf("[!] UnmapPhysicalMemory failed with %X\n", status);
     }
