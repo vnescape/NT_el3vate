@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 #define MapPhysicalMemoryToLinearSpace 0xFA002EE8
+#define UnmapPhysicalMemory 0xFA002EEC
 
 int main(char argc, char** argv)
 {
@@ -25,6 +26,15 @@ int main(char argc, char** argv)
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer[0], bytesReturned);
 
     system("pause");
+
+    device = INVALID_HANDLE_VALUE;
+    status = FALSE;
+    bytesReturned = 0;
+    inBuffer[64] = { 0 };
+    outBuffer[64] = { 0 };
+
+    status = DeviceIoControl(device, UnmapPhysicalMemory, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
+
     CloseHandle(device);
     return EXIT_SUCCESS;
 }
