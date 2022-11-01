@@ -14,14 +14,23 @@ struct struct_buffer
     PVOID PhysicalBaseAddress;
 };
 
+struct Phys32Struct
+{
+    HANDLE PhysicalMemoryHandle;
+    SIZE_T dwPhysMemSizeInBytes;
+    PVOID pvPhysAddress;
+    PVOID pvPhysMemLin;
+};
+//source: https://github.com/ellysh/InpOut32/blob/fa28b483c4ab9e18f6d437fad390022181aa37f9/driver/hwinterfacedrv.h#L15
+
 
 int main(char argc, char** argv)
 {
     HANDLE device = INVALID_HANDLE_VALUE;
     NTSTATUS status = FALSE;
     DWORD bytesReturned = 0;
-    char inBuffer[64] = {0};
-    CHAR outBuffer[64] = { 0 };
+    struct struct_buffer phys32Struct = { 0 };
+
 
     device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
 
@@ -32,13 +41,13 @@ int main(char argc, char** argv)
     }
 
     printf("[ ] Calling MapPhysicalMemoryToLinearSpace 0x%X\n", MapPhysicalMemoryToLinearSpace);
-    status = DeviceIoControl(device, MapPhysicalMemoryToLinearSpace, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
+    status = DeviceIoControl(device, MapPhysicalMemoryToLinearSpace, &phys32Struct, sizeof(phys32Struct), &phys32Struct, sizeof(phys32Struct), &bytesReturned, (LPOVERLAPPED)NULL);
     if (status == FALSE) {
         printf("[!] MapPhysicalMemoryToLinearSpace failed with %X\n", status);
         return EXIT_FAILURE;
     }
     printf("[*] MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
-    printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer[0], bytesReturned);
+    printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", phys32Struct, bytesReturned);
     /*
     printf("[*] inBuffer PhysicalBaseAddress: %p\n", inBuffer.PhysicalBaseAddress);
     printf("[*] inBuffer SectionHandle: %p\n", inBuffer.SectionHandle);
@@ -50,18 +59,20 @@ int main(char argc, char** argv)
     HANDLE device2 = INVALID_HANDLE_VALUE;
     NTSTATUS status2 = FALSE;
     DWORD bytesReturned2 = 0;
-    CHAR inBuffer2[64] = { 0 };
-    CHAR outBuffer2[64] = { 0 };
+    printf("phys32Struct.PhysicalBaseAddress`: %X\n", phys32Struct.PhysicalBaseAddress);
+    printf("phys32Struct.BusAddress`: %X\n", phys32Struct.BusAddress);
+    printf("phys32Struct.SectionHandle`: %X\n", phys32Struct.SectionHandle);
 
     printf("[ ] Calling UnmapPhysicalMemory 0x%X\n", UnmapPhysicalMemory);
-    status = DeviceIoControl(device2, UnmapPhysicalMemory, inBuffer2, sizeof(inBuffer2), outBuffer2, sizeof(outBuffer2), &bytesReturned2, (LPOVERLAPPED)NULL);
+    status = DeviceIoControl(device2, UnmapPhysicalMemory, &phys32Struct,
+        sizeof(phys32Struct), NULL, 0, &bytesReturned2, (LPOVERLAPPED)NULL);
     if (status == FALSE) {
         printf("[!] UnmapPhysicalMemory failed with %X\n", status);
         return EXIT_FAILURE;
         //https://github.com/ellysh/InpOut32/blob/master/driver/hwinterfacedrv.c
     }
     printf("[*] UnmapPhysicalMemory 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
-    printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer2[0], bytesReturned2);
+    printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", bytesReturned2, bytesReturned2);
 
     system("pause");
 
