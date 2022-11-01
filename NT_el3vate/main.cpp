@@ -58,6 +58,7 @@ int main(char argc, char** argv)
     if (status == FALSE) {
         printf("[!] UnmapPhysicalMemory failed with %X\n", status);
         return EXIT_FAILURE;
+        //https://github.com/ellysh/InpOut32/blob/master/driver/hwinterfacedrv.c
     }
     printf("[*] UnmapPhysicalMemory 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer2[0], bytesReturned2);
