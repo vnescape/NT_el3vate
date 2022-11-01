@@ -35,6 +35,7 @@ int main(char argc, char** argv)
     status = DeviceIoControl(device, MapPhysicalMemoryToLinearSpace, &inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
     if (status != STATUS_SUCCESS) {
         printf("[!] MapPhysicalMemoryToLinearSpace failed with %X\n", status);
+        return EXIT_FAILURE;
     }
     printf("[*] MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer[0], bytesReturned);
