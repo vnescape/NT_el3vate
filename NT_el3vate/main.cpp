@@ -59,9 +59,9 @@ int main(char argc, char** argv)
     HANDLE device2 = INVALID_HANDLE_VALUE;
     NTSTATUS status2 = FALSE;
     DWORD bytesReturned2 = 0;
-    printf("phys32Struct.PhysicalBaseAddress`: %X\n", phys32Struct.PhysicalBaseAddress);
-    printf("phys32Struct.BusAddress`: %X\n", phys32Struct.BusAddress);
-    printf("phys32Struct.SectionHandle`: %X\n", phys32Struct.SectionHandle);
+    printf("phys32Struct.PhysicalBaseAddress: %X\n", phys32Struct.PhysicalBaseAddress);
+    printf("phys32Struct.BusAddress: %X\n", phys32Struct.BusAddress);
+    printf("phys32Struct.SectionHandle: %X\n", phys32Struct.SectionHandle);
 
     printf("[ ] Calling UnmapPhysicalMemory 0x%X\n", UnmapPhysicalMemory);
     status = DeviceIoControl(device2, UnmapPhysicalMemory, &phys32Struct,
