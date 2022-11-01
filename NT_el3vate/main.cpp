@@ -57,6 +57,7 @@ int main(char argc, char** argv)
     status = DeviceIoControl(device2, UnmapPhysicalMemory, inBuffer2, sizeof(inBuffer2), outBuffer2, sizeof(outBuffer2), &bytesReturned2, (LPOVERLAPPED)NULL);
     if (status == FALSE) {
         printf("[!] UnmapPhysicalMemory failed with %X\n", status);
+        return EXIT_FAILURE;
     }
     printf("[*] UnmapPhysicalMemory 0x%X called successfully\n", MapPhysicalMemoryToLinearSpace);
     printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", outBuffer2[0], bytesReturned2);
