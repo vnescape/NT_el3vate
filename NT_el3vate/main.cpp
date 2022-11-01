@@ -33,7 +33,7 @@ int main(char argc, char** argv)
 
     printf("[ ] Calling MapPhysicalMemoryToLinearSpace 0x%X\n", MapPhysicalMemoryToLinearSpace);
     status = DeviceIoControl(device, MapPhysicalMemoryToLinearSpace, inBuffer, sizeof(inBuffer), outBuffer, sizeof(outBuffer), &bytesReturned, (LPOVERLAPPED)NULL);
-    if (status != STATUS_SUCCESS) {
+    if (status == FALSE) {
         printf("[!] MapPhysicalMemoryToLinearSpace failed with %X\n", status);
         return EXIT_FAILURE;
     }
