@@ -6,21 +6,21 @@
 #define IOCTL_UnmapPhysicalMemory 0xFA002EEC
 #define STATUS_SUCCESS 0x0
 
-struct struct_buffer
+typedef struct struct_buffer
 {
     void* SectionHandle;
     DWORD offset;
     unsigned int BusAddress;
     PVOID PhysicalBaseAddress;
-};
+} struct_buffer;
 
-struct Phys32Struct
+typedef struct Phys32Struct
 {
     HANDLE PhysicalMemoryHandle;
     SIZE_T dwPhysMemSizeInBytes;
     PVOID pvPhysAddress;
     PVOID pvPhysMemLin;
-} ;
+} Phys32Struct;
 //source: https://github.com/ellysh/InpOut32/blob/fa28b483c4ab9e18f6d437fad390022181aa37f9/driver/hwinterfacedrv.h#L15
 NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
     HANDLE device2 = INVALID_HANDLE_VALUE;
@@ -47,7 +47,7 @@ int main(char argc, char** argv)
     HANDLE device = INVALID_HANDLE_VALUE;
     NTSTATUS status = FALSE;
     DWORD bytesReturned = 0;
-    struct Phys32Struct phys32Struct = { 0 };
+    Phys32Struct phys32Struct = { 0 };
 
 
     device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
