@@ -65,11 +65,11 @@ int main(char argc, char** argv)
         return EXIT_FAILURE;
     }
     printf("[*] IOCTL_MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-    printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", phys32Struct, bytesReturned);
-    printf("phys32Struct.dwPhysMemSizeInBytes: %X\n", phys32Struct.dwPhysMemSizeInBytes);
-    printf("phys32Struct.PhysicalMemoryHandle: %X\n", phys32Struct.PhysicalMemoryHandle);
-    printf("phys32Struct.pvPhysAddress: %X\n", phys32Struct.pvPhysAddress);
-    printf("phys32Struct.pvPhysMemLin: %X\n", phys32Struct.pvPhysMemLin);
+    printf("[*] Buffer from the kernel land: %p. Received buffer size: %d\n", phys32Struct, bytesReturned);
+    printf("phys32Struct.dwPhysMemSizeInBytes: %p\n", phys32Struct.dwPhysMemSizeInBytes);
+    printf("phys32Struct.PhysicalMemoryHandle: %p\n", phys32Struct.PhysicalMemoryHandle);
+    printf("phys32Struct.pvPhysAddress: %p\n", phys32Struct.pvPhysAddress);
+    printf("phys32Struct.pvPhysMemLin: %p\n", phys32Struct.pvPhysMemLin);
 
 
     system("pause");
