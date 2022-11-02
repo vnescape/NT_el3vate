@@ -28,7 +28,7 @@ NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
     DWORD bytesReturned2 = 0;
 
 
-    printf("[ ] Calling UnmapPhysicalMemory 0x%X\n", UnmapPhysicalMemory);
+    printf("[ ] Calling UnmapPhysicalMemory 0x%p\n", UnmapPhysicalMemory);
     status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, &phys32,
         sizeof(phys32), NULL, 0, &bytesReturned2, (LPOVERLAPPED)NULL);
     if (status == FALSE) {
@@ -65,8 +65,8 @@ int main(char argc, char** argv)
         return EXIT_FAILURE;
     }
     printf("[*] IOCTL_MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-    printf("[*] Buffer from the kernel land: %p. Received buffer size: %d\n", phys32Struct, bytesReturned);
-    printf("phys32Struct.dwPhysMemSizeInBytes: %p\n", phys32Struct.dwPhysMemSizeInBytes);
+    printf("[*] Buffer from the kernel land:\n");
+    printf("phys32Struct.dwPhysMemSizeInBytes: %lld\n", phys32Struct.dwPhysMemSizeInBytes);
     printf("phys32Struct.PhysicalMemoryHandle: %p\n", phys32Struct.PhysicalMemoryHandle);
     printf("phys32Struct.pvPhysAddress: %p\n", phys32Struct.pvPhysAddress);
     printf("phys32Struct.pvPhysMemLin: %p\n", phys32Struct.pvPhysMemLin);
