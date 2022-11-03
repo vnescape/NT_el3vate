@@ -1,10 +1,12 @@
 #include <iostream>
 #include <Windows.h>
-//#include <ntstatus.h>
+#include <winternl.h>
 
 #define IOCTL_MapPhysicalMemoryToLinearSpace 0xFA002EE8
 #define IOCTL_UnmapPhysicalMemory 0xFA002EEC
 #define STATUS_SUCCESS 0x0
+
+#define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
 
 typedef struct struct_buffer
 {
@@ -24,10 +26,16 @@ typedef struct Phys32Struct
 //source: https://github.com/ellysh/InpOut32/blob/fa28b483c4ab9e18f6d437fad390022181aa37f9/driver/hwinterfacedrv.h#L15
 
 LPVOID ntoskernl_base(void) {
-    LPVOID systemInformation = VirtualAlloc(NULL, 4 * 1024, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    ULONG systemInformationLength = 4 * 1024;
+    LPVOID systemInformation = VirtualAlloc(NULL, systemInformationLength, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     if (systemInformation == NULL) {
         fprintf(stderr, "VirtualAlloc failed.\n");
         return NULL;
+    }
+    PULONG returnLength = 0;
+    NTSTATUS status = NtQuerySystemInformation(SystemModuleInformation, systemInformation, systemInformationLength, returnLength);
+    if (!NT_SUCCESS(status)) {
+
     }
 }
 
