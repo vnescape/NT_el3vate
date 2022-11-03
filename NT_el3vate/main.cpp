@@ -22,6 +22,15 @@ typedef struct Phys32Struct
     PVOID pvPhysMemLin;
 } Phys32Struct;
 //source: https://github.com/ellysh/InpOut32/blob/fa28b483c4ab9e18f6d437fad390022181aa37f9/driver/hwinterfacedrv.h#L15
+
+LPVOID ntoskernl_base(void) {
+    LPVOID systemInformation = VirtualAlloc(NULL, 4 * 1024, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (systemInformation == NULL) {
+        fprintf(stderr, "VirtualAlloc failed.\n");
+        return NULL;
+    }
+}
+
 NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
     HANDLE device2 = INVALID_HANDLE_VALUE;
     NTSTATUS status = FALSE;
