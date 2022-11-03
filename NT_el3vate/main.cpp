@@ -41,7 +41,7 @@ NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
     status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, &phys32,
         sizeof(phys32), NULL, 0, &bytesReturned2, (LPOVERLAPPED)NULL);
     if (status == FALSE) {
-        printf("[!] UnmapPhysicalMemory failed with %X\n", status);
+        fprintf(stderr ,"[!] UnmapPhysicalMemory failed with %X\n", status);
         return EXIT_FAILURE;
         //https://github.com/ellysh/InpOut32/blob/master/driver/hwinterfacedrv.c
     }
@@ -63,14 +63,14 @@ int main(char argc, char** argv)
 
     if (device == INVALID_HANDLE_VALUE)
     {
-        printf("> Could not open device: 0x%X\n", GetLastError());
+        fprintf(stderr ,"> Could not open device: 0x%X\n", GetLastError());
         return FALSE;
     }
 
     printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
     status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &phys32Struct, sizeof(phys32Struct), &phys32Struct, sizeof(phys32Struct), &bytesReturned, (LPOVERLAPPED)NULL);
     if (status == FALSE) {
-        printf("[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
+        fprintf(stderr,"[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
         return EXIT_FAILURE;
     }
     printf("[*] IOCTL_MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", IOCTL_MapPhysicalMemoryToLinearSpace);
