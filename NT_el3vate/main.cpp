@@ -1,3 +1,4 @@
+#pragma comment(lib, "ntdll.lib") // link "ntdll.lib" for NtQuerySystemInformation()
 #include <iostream>
 #include <Windows.h>
 #include <winternl.h>
@@ -7,6 +8,7 @@
 #define STATUS_SUCCESS 0x0
 
 #define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
+#pragma comment(lib,"ntdll.lib")
 
 typedef struct struct_buffer
 {
