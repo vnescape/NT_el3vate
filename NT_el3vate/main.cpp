@@ -53,7 +53,7 @@ typedef struct _RTL_PROCESS_MODULES
 
 
 LPVOID EPROCESS_address(LPVOID ntoskernlBase) {
-    HMODULE hNtoskrl = LoadLibrary(L"ntoskrnl");
+    HMODULE hNtoskrl = LoadLibrary(L"ntoskrnl.exe");
     if (hNtoskrl == NULL) {
         fprintf(stderr, "LoadLibrary failed.\n");
         return NULL;
