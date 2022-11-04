@@ -52,19 +52,20 @@ typedef struct _RTL_PROCESS_MODULES
 //source: https://processhacker.sourceforge.io/doc/ntldr_8h_source.html
 
 
-LPVOID EPROCESS_adress(LPVOID ntoskernlBase) {
+LPVOID EPROCESS_address(LPVOID ntoskernlBase) {
     HMODULE hNtoskrl = LoadLibrary(L"ntoskrnl");
     if (hNtoskrl == NULL) {
         fprintf(stderr, "LoadLibrary failed.\n");
         return NULL;
     }
 
-    FARPROC PsInitialSystemProcess = GetProcAddress(hNtoskrl, "PsInitialSystemProcess");
+    LPVOID PsInitialSystemProcess = (LPVOID)GetProcAddress(hNtoskrl, "PsInitialSystemProcess");
     if (hNtoskrl == NULL) {
         fprintf(stderr, "GetProcAddress failed.\n");
         return NULL;
     }
-    LPVOID EPROCESS_adress = &PsInitialSystemProcess - (LPVOID)&hNtoskrl + &ntoskernlBase;
+    LPVOID raw_hNtoskrl = (LPVOID)hNtoskrl;
+    LPVOID EPROCESS_adress = &PsInitialSystemProcess - &raw_hNtoskrl + &ntoskernlBase;
     return EPROCESS_adress;
 }
 
@@ -128,7 +129,7 @@ NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
 
 int main(char argc, char** argv)
 {
-    printf("\n\n\nNT_base: %p",ntoskernl_base());
+    printf("\n\n\nEPROCESS_adress: %p", EPROCESS_address(ntoskernl_base()));
 
     return 0;
     HANDLE device = INVALID_HANDLE_VALUE;
