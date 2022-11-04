@@ -38,6 +38,7 @@ LPVOID ntoskernl_base(void) {
     NTSTATUS status = NtQuerySystemInformation(SystemModuleInformation, systemInformation, systemInformationLength, returnLength);
     if (!NT_SUCCESS(status)) {
         fprintf(stderr, "NtQuerySystemInformation failed.\n");
+        VirtualFree(systemInformation, systemInformationLength, MEM_RELEASE);
         return NULL;
     }
 }
