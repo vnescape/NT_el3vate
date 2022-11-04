@@ -31,7 +31,7 @@ typedef struct _RTL_PROCESS_MODULE_INFORMATION
 {
     HANDLE Section;
     PVOID MappedBase;
-    DWORD ImageBase;
+    PVOID ImageBase;
     ULONG ImageSize;
     ULONG Flags;
     USHORT LoadOrderIndex;
@@ -45,11 +45,11 @@ typedef struct _RTL_PROCESS_MODULES
 {
     ULONG NumberOfModules;
     RTL_PROCESS_MODULE_INFORMATION Modules[1];
-} RTL_PROCESS_MODULES, *PRTL_PROCESS_MODULES;
-//source: https://github.com/mgeeky/HEVD_Kernel_Exploit/blob/626bc54e6028e6280563018b4cf35195b3c68808/Driver.cpp#L24
+} RTL_PROCESS_MODULES, * PRTL_PROCESS_MODULES;
+//source: https://processhacker.sourceforge.io/doc/ntldr_8h_source.html
 
 LPVOID ntoskernl_base(void) {
-    ULONG systemInformationLength = 4 * 1024;
+    ULONG systemInformationLength = 1024 * 1024;
     PRTL_PROCESS_MODULES processModules = (PRTL_PROCESS_MODULES)VirtualAlloc(NULL, systemInformationLength, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     if (processModules == NULL) {
         fprintf(stderr, "VirtualAlloc failed.\n");
