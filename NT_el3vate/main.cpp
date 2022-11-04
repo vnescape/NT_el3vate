@@ -74,7 +74,7 @@ LPVOID ntoskernl_base(void) {
 
         const char* imageName = (const char*)processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName;
         if (strcmp("ntoskrnl.exe", imageName) == 0) {
-            nt_base = processModules->Modules[i].ImageBase);
+            nt_base = processModules->Modules[i].ImageBase;
 
             printf("\n*****************************************************");
             printf("\nImage base: %#p", processModules->Modules[i].ImageBase);
