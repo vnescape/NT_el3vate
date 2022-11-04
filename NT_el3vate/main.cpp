@@ -67,7 +67,7 @@ LPVOID ntoskernl_base(void) {
     for (int i = 0; i < processModules->NumberOfModules; i++)
     {
         printf("\n*****************************************************\n");
-        printf("\nImage base: %#x\n", processModules->Modules[i].ImageBase);
+        printf("\nImage base: %#p\n", processModules->Modules[i].ImageBase);
         printf("\nImage name: %s\n", processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName);
         printf("\nImage full path: %s\n", processModules->Modules[i].FullPathName);
         printf("\nImage size: %d\n", processModules->Modules[i].ImageSize);
