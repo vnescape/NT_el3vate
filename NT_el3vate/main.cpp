@@ -27,20 +27,53 @@ typedef struct Phys32Struct
 } Phys32Struct;
 //source: https://github.com/ellysh/InpOut32/blob/fa28b483c4ab9e18f6d437fad390022181aa37f9/driver/hwinterfacedrv.h#L15
 
+typedef struct _RTL_PROCESS_MODULE_INFORMATION
+{
+    HANDLE Section;
+    PVOID MappedBase;
+    DWORD ImageBase;
+    ULONG ImageSize;
+    ULONG Flags;
+    USHORT LoadOrderIndex;
+    USHORT InitOrderIndex;
+    USHORT LoadCount;
+    USHORT OffsetToFileName;
+    UCHAR FullPathName[256];
+} RTL_PROCESS_MODULE_INFORMATION, * PRTL_PROCESS_MODULE_INFORMATION;
+
+typedef struct _RTL_PROCESS_MODULES
+{
+    ULONG NumberOfModules;
+    RTL_PROCESS_MODULE_INFORMATION Modules[1];
+} RTL_PROCESS_MODULES, *PRTL_PROCESS_MODULES;
+//source: https://github.com/mgeeky/HEVD_Kernel_Exploit/blob/626bc54e6028e6280563018b4cf35195b3c68808/Driver.cpp#L24
+
 LPVOID ntoskernl_base(void) {
     ULONG systemInformationLength = 4 * 1024;
-    LPVOID systemInformation = VirtualAlloc(NULL, systemInformationLength, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-    if (systemInformation == NULL) {
+    PRTL_PROCESS_MODULES processModules = (PRTL_PROCESS_MODULES)VirtualAlloc(NULL, systemInformationLength, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (processModules == NULL) {
         fprintf(stderr, "VirtualAlloc failed.\n");
         return NULL;
     }
+
     PULONG returnLength = 0;
-    NTSTATUS status = NtQuerySystemInformation(SystemModuleInformation, systemInformation, systemInformationLength, returnLength);
+    NTSTATUS status = NtQuerySystemInformation(SystemModuleInformation, processModules, systemInformationLength, returnLength);
     if (!NT_SUCCESS(status)) {
-        fprintf(stderr, "NtQuerySystemInformation failed.\n");
-        VirtualFree(systemInformation, 0, MEM_RELEASE);
+        fprintf(stderr, "NtQuerySystemInformation failed: %ld\n", status);
+        VirtualFree(processModules, 0, MEM_RELEASE);
         return NULL;
     }
+
+    for (int i = 0; i < processModules->NumberOfModules; i++)
+    {
+        printf("\n*****************************************************\n");
+        printf("\nImage base: %#x\n", processModules->Modules[i].ImageBase);
+        printf("\nImage name: %s\n", processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName);
+        printf("\nImage full path: %s\n", processModules->Modules[i].FullPathName);
+        printf("\nImage size: %d\n", processModules->Modules[i].ImageSize);
+        printf("\n*****************************************************\n");
+    }
+    return NULL;
 }
 
 NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
@@ -65,6 +98,8 @@ NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
 
 int main(char argc, char** argv)
 {
+    ntoskernl_base();
+    return 0;
     HANDLE device = INVALID_HANDLE_VALUE;
     NTSTATUS status = FALSE;
     DWORD bytesReturned = 0;
