@@ -52,7 +52,9 @@ typedef struct _RTL_PROCESS_MODULES
 //source: https://processhacker.sourceforge.io/doc/ntldr_8h_source.html
 
 LPVOID ntoskernl_base(void) {
+    PVOID nt_base = NULL;
     ULONG systemInformationLength = 1024 * 1024;
+
     PRTL_PROCESS_MODULES processModules = (PRTL_PROCESS_MODULES)VirtualAlloc(NULL, systemInformationLength, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     if (processModules == NULL) {
         fprintf(stderr, "VirtualAlloc failed.\n");
@@ -69,18 +71,22 @@ LPVOID ntoskernl_base(void) {
 
     for (int i = 0; i < processModules->NumberOfModules; i++)
     {
+
         const char* imageName = (const char*)processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName;
         if (strcmp("ntoskrnl.exe", imageName) == 0) {
-            printf("\n*****************************************************\n");
-            printf("\nImage base: %#p\n", processModules->Modules[i].ImageBase);
-            printf("\nImage name: %s\n", processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName);
-            printf("\nImage full path: %s\n", processModules->Modules[i].FullPathName);
-            printf("\nImage size: %d\n", processModules->Modules[i].ImageSize);
+            nt_base = processModules->Modules[i].ImageBase);
+
+            printf("\n*****************************************************");
+            printf("\nImage base: %#p", processModules->Modules[i].ImageBase);
+            printf("\nImage name: %s", processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName);
+            printf("\nImage full path: %s", processModules->Modules[i].FullPathName);
+            printf("\nImage size: %d", processModules->Modules[i].ImageSize);
             printf("\n*****************************************************\n");
         }
-        
     }
-    return NULL;
+
+
+    return nt_base;
 }
 
 NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
@@ -105,7 +111,7 @@ NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
 
 int main(char argc, char** argv)
 {
-    ntoskernl_base();
+    printf("\n\n\nNT_base: %p",ntoskernl_base());
     return 0;
     HANDLE device = INVALID_HANDLE_VALUE;
     NTSTATUS status = FALSE;
