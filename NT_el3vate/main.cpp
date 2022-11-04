@@ -2,6 +2,9 @@
 #include <iostream>
 #include <Windows.h>
 #include <winternl.h>
+#include <stdio.h>
+#include <string.h>
+
 
 #define IOCTL_MapPhysicalMemoryToLinearSpace 0xFA002EE8
 #define IOCTL_UnmapPhysicalMemory 0xFA002EEC
@@ -66,12 +69,16 @@ LPVOID ntoskernl_base(void) {
 
     for (int i = 0; i < processModules->NumberOfModules; i++)
     {
-        printf("\n*****************************************************\n");
-        printf("\nImage base: %#p\n", processModules->Modules[i].ImageBase);
-        printf("\nImage name: %s\n", processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName);
-        printf("\nImage full path: %s\n", processModules->Modules[i].FullPathName);
-        printf("\nImage size: %d\n", processModules->Modules[i].ImageSize);
-        printf("\n*****************************************************\n");
+        const char* imageName = (const char*)processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName;
+        if (strcmp("ntoskrnl.exe", imageName) == 0) {
+            printf("\n*****************************************************\n");
+            printf("\nImage base: %#p\n", processModules->Modules[i].ImageBase);
+            printf("\nImage name: %s\n", processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName);
+            printf("\nImage full path: %s\n", processModules->Modules[i].FullPathName);
+            printf("\nImage size: %d\n", processModules->Modules[i].ImageSize);
+            printf("\n*****************************************************\n");
+        }
+        
     }
     return NULL;
 }
