@@ -37,7 +37,8 @@ LPVOID ntoskernl_base(void) {
     PULONG returnLength = 0;
     NTSTATUS status = NtQuerySystemInformation(SystemModuleInformation, systemInformation, systemInformationLength, returnLength);
     if (!NT_SUCCESS(status)) {
-
+        fprintf(stderr, "NtQuerySystemInformation failed.\n");
+        return NULL;
     }
 }
 
