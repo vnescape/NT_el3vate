@@ -11,7 +11,6 @@
 #define STATUS_SUCCESS 0x0
 
 #define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
-#pragma comment(lib,"ntdll.lib")
 
 typedef struct struct_buffer
 {
