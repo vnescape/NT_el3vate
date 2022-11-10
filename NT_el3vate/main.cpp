@@ -65,10 +65,10 @@ using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	ULONG AllocationType,
 	ULONG Win32Protect);
 myNtMapViewOfSection fNtMapViewOfSection = (myNtMapViewOfSection)(GetProcAddress(GetModuleHandleA("ntdll"), "NtMapViewOfSection"));
-static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, SIZE_T Length, PDWORD64 VirtualAddress)
+static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PDWORD64 VirtualAddress)
 {
 	NTSTATUS			ntStatus;
-	PHYSICAL_ADDRESS	viewBase;
+	PHYSICAL_ADDRESS	SectionOffset = Address;
 
 	*VirtualAddress = 0;
 	printf("befode the meme");
@@ -80,7 +80,7 @@ static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, SIZE_T
 		(PVOID*)VirtualAddress,
 		0L,
 		Length,
-		&viewBase,
+		&SectionOffset,
 		&Length,
 		2,
 		0,
@@ -88,7 +88,7 @@ static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, SIZE_T
 	);
 	printf("ntStatus: %d\n", ntStatus);
 	printf("VirtualAddress: %p\n", VirtualAddress);
-	printf("ViewBase %p\n", &viewBase);
+	printf("ViewBase %p\n", &SectionOffset);
 	system("pause");
 	if (!NT_SUCCESS(ntStatus)) return false;
 	return true;
@@ -207,8 +207,8 @@ int main(char argc, char** argv)
 	//MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, (PDWORD64)0x00132000, 0x1000, buf);
 
 	unsigned int page = 0x100000;
-	for (int page = 0; page < 0x7FFFFFFFFFFF; page + 0x1000) {
-		MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, (PDWORD64)page, 0x1000, buf);
+	for (__int64 page = 0; page < 0x7FFFFFFFFFFF; page + 0x1000) {
+		MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, page, 0x1000, buf);
 		memset(buf, 0x47, 0x1000);
 		printf("Set %p to 0x47: \n", page);
 	}
