@@ -53,15 +53,24 @@ typedef struct _RTL_PROCESS_MODULES
 
 
 #define PHYSICAL_ADDRESS	LARGE_INTEGER
-using myNtMapViewOfSection = NTSTATUS(NTAPI*)(HANDLE SectionHandle, HANDLE ProcessHandle, PVOID* BaseAddress, ULONG_PTR ZeroBits, SIZE_T CommitSize, PLARGE_INTEGER SectionOffset, PSIZE_T ViewSize, DWORD64 InheritDisposition, ULONG AllocationType, ULONG Win32Protect);
+using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
+	HANDLE SectionHandle,
+	HANDLE ProcessHandle,
+	PVOID* BaseAddress,
+	ULONG_PTR ZeroBits,
+	SIZE_T CommitSize,
+	PLARGE_INTEGER SectionOffset,
+	PSIZE_T ViewSize,
+	DWORD64 InheritDisposition,
+	ULONG AllocationType,
+	ULONG Win32Protect);
 myNtMapViewOfSection fNtMapViewOfSection = (myNtMapViewOfSection)(GetProcAddress(GetModuleHandleA("ntdll"), "NtMapViewOfSection"));
-static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, PSIZE_T Length, PDWORD64 VirtualAddress)
+static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, SIZE_T Length, PDWORD64 VirtualAddress)
 {
 	NTSTATUS			ntStatus;
 	PHYSICAL_ADDRESS	viewBase;
 
 	*VirtualAddress = 0;
-	viewBase.QuadPart = (ULONGLONG)(*Address);
 	printf("befode the meme");
 	system("pause");
 	ntStatus = fNtMapViewOfSection // maybe wrong function call?
@@ -70,16 +79,18 @@ static BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, PDWORD64 Address, PSIZE_
 		GetCurrentProcess(),
 		(PVOID*)VirtualAddress,
 		0L,
-		*Length,
-		&viewBase,
 		Length,
+		&viewBase,
+		&Length,
 		2,
 		0,
 		PAGE_READWRITE
 	);
-	printf("%d", ntStatus);
+	printf("ntStatus: %d\n", ntStatus);
+	printf("VirtualAddress: %p\n", VirtualAddress);
+	printf("ViewBase %p\n", &viewBase);
+	system("pause");
 	if (!NT_SUCCESS(ntStatus)) return false;
-	*Address = viewBase.LowPart;
 	return true;
 }
 
@@ -193,12 +204,13 @@ int main(char argc, char** argv)
 	system("pause");
 
 	PDWORD64 buf = (PDWORD64)malloc(1024);
-	unsigned int page = 0x0;
+	//MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, (PDWORD64)0x00132000, 0x1000, buf);
+
+	unsigned int page = 0x100000;
 	for (int page = 0; page < 0x7FFFFFFFFFFF; page + 0x1000) {
-		MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, (PDWORD64)0x00132000, (PSIZE_T)0x1000, buf);
+		MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, (PDWORD64)page, 0x1000, buf);
 		memset(buf, 0x47, 0x1000);
-		printf("Set to 0x47: %p\n", page);
-		break;
+		printf("Set %p to 0x47: \n", page);
 	}
 
 	free(buf);
