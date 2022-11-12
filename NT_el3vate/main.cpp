@@ -129,7 +129,7 @@ LPVOID ntoskernl_base(void) {
 		return NULL;
 	}
 
-	for (int i = 0; i < processModules->NumberOfModules; i++)
+	for (ULONG i = 0; i < processModules->NumberOfModules; i++)
 	{
 
 		const char* imageName = (const char*)processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName;
@@ -208,10 +208,10 @@ int main(char argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 
-	for (__int64 page = 0; page < 0x7FFFFFFFFFFF; page + 0x1000) {
+	for (__int64 page = 0; page < 0x7FFFFFFFFFFF; page = page + 0x1000) {
 		MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, page, 0x1000, buf);
 		memset(buf, 0x47, 0x1000);
-		printf("Set %ld to 0x47: \n", page);
+		printf("Set %lld to 0x47: \n", page);
 	}
 
 	free(buf);
