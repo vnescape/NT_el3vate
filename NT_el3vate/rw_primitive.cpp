@@ -43,22 +43,22 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 	return true;
 }
 
-NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32) {
+NTSTATUS UnmapPhysicalMemory(HANDLE PhysicalMemory) {
 	HANDLE device2 = INVALID_HANDLE_VALUE;
 	NTSTATUS status = FALSE;
-	DWORD bytesReturned2 = 0;
+	DWORD bytesReturned = 0;
 
 
 	printf("[ ] Calling UnmapPhysicalMemory 0x%p\n", UnmapPhysicalMemory);
-	status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, &phys32,
-		sizeof(phys32), NULL, 0, &bytesReturned2, (LPOVERLAPPED)NULL);
+	status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, PhysicalMemory,
+		sizeof(PhysicalMemory), NULL, 0, &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
 		fprintf(stderr, "[!] UnmapPhysicalMemory failed with %X\n", status);
 		return EXIT_FAILURE;
 		//https://github.com/ellysh/InpOut32/blob/master/driver/hwinterfacedrv.c
 	}
 	printf("[*] UnmapPhysicalMemory 0x%X called successfully\n", IOCTL_UnmapPhysicalMemory);
-	printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", bytesReturned2, bytesReturned2);
+	printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", bytesReturned, bytesReturned);
 
 	return status;
 }

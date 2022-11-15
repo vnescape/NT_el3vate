@@ -20,5 +20,5 @@ typedef struct Phys32Struct
 
 
 BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PDWORD64 VirtualAddress);
-NTSTATUS UnmapPhysicalMemory(Phys32Struct& phys32);
+NTSTATUS UnmapPhysicalMemory(HANDLE PhysicalMemory);
 HANDLE GetDevicePhysicalMemoryHandle(LPCWSTR driverName);
