@@ -21,9 +21,15 @@
     <ClCompile Include="rw_primitive.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="windows_helper_functions.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rw_primitive.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_helper_functions.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
