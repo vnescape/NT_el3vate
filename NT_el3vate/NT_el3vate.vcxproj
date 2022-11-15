@@ -127,13 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="rw_primitive.cpp" />
-    <ClCompile Include="windows_helper_functions.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\rw_primitive.cpp" />
+    <ClCompile Include="src\windows_helper_functions.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="rw_primitive.h" />
-    <ClInclude Include="windows_helper_functions.h" />
+    <ClInclude Include="src\rw_primitive.h" />
+    <ClInclude Include="src\windows_helper_functions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
