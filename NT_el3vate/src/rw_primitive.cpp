@@ -74,7 +74,7 @@ HANDLE GetDevicePhysicalMemoryHandle(LPCWSTR driverName) {
 
 	if (device == INVALID_HANDLE_VALUE)
 	{
-		fprintf(stderr, "> Could not open device: 0x%X\n", GetLastError());
+		fprintf(stderr, "[!] Could not open device: 0x%X\n", GetLastError());
 		CloseHandle(device);
 		return NULL;
 	}

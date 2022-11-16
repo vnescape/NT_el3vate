@@ -3,13 +3,13 @@
 LPVOID EPROCESS_address(LPVOID ntoskernlBase) {
 	HMODULE hNtoskrl = LoadLibrary(L"ntoskrnl.exe");
 	if (hNtoskrl == NULL) {
-		fprintf(stderr, "LoadLibrary failed.\n");
+		fprintf(stderr, "[!] LoadLibrary failed.\n");
 		return NULL;
 	}
 
 	LPVOID PsInitialSystemProcess = (LPVOID)GetProcAddress(hNtoskrl, "PsInitialSystemProcess");
 	if (hNtoskrl == NULL) {
-		fprintf(stderr, "GetProcAddress failed.\n");
+		fprintf(stderr, "[!] GetProcAddress failed.\n");
 		return NULL;
 	}
 	__int64 EPROCESS_address = (__int64)PsInitialSystemProcess - (__int64)hNtoskrl + (__int64)ntoskernlBase;
@@ -22,14 +22,14 @@ LPVOID ntoskernl_base(void) {
 
 	PRTL_PROCESS_MODULES processModules = (PRTL_PROCESS_MODULES)VirtualAlloc(NULL, systemInformationLength, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (processModules == NULL) {
-		fprintf(stderr, "VirtualAlloc failed.\n");
+		fprintf(stderr, "[!] VirtualAlloc failed.\n");
 		return NULL;
 	}
 
 	PULONG returnLength = 0;
 	NTSTATUS status = NtQuerySystemInformation(SystemModuleInformation, processModules, systemInformationLength, returnLength);
 	if (!NT_SUCCESS(status)) {
-		fprintf(stderr, "NtQuerySystemInformation failed: %ld\n", status);
+		fprintf(stderr, "[!] NtQuerySystemInformation failed: %ld\n", status);
 		VirtualFree(processModules, 0, MEM_RELEASE);
 		return NULL;
 	}
