@@ -106,40 +106,77 @@ typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_list
 typedef struct _CM_PARTIAL_RESOURCE_LIST {
-	USHORT                         Version;
-	USHORT                         Revision;
-	ULONG                          Count;
-	CM_PARTIAL_RESOURCE_DESCRIPTOR PartialDescriptors[1];
+    USHORT                         Version;
+    USHORT                         Revision;
+    ULONG                          Count;
+    CM_PARTIAL_RESOURCE_DESCRIPTOR PartialDescriptors[1];
 } CM_PARTIAL_RESOURCE_LIST, * PCM_PARTIAL_RESOURCE_LIST;
+
+//Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_resource_list
+typedef struct _CM_RESOURCE_LIST {
+    ULONG                       Count;
+    CM_FULL_RESOURCE_DESCRIPTOR List[1];
+} CM_RESOURCE_LIST, * PCM_RESOURCE_LIST;
+
+//Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_full_resource_descriptor
+typedef struct _CM_FULL_RESOURCE_DESCRIPTOR {
+    INTERFACE_TYPE           InterfaceType;
+    ULONG                    BusNumber;
+    CM_PARTIAL_RESOURCE_LIST PartialResourceList;
+} CM_FULL_RESOURCE_DESCRIPTOR, * PCM_FULL_RESOURCE_DESCRIPTOR;
+
+//Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_interface_type
+typedef enum _INTERFACE_TYPE {
+    InterfaceTypeUndefined,
+    Internal,
+    Isa,
+    Eisa,
+    MicroChannel,
+    TurboChannel,
+    PCIBus,
+    VMEBus,
+    NuBus,
+    PCMCIABus,
+    CBus,
+    MPIBus,
+    MPSABus,
+    ProcessorInternal,
+    InternalPowerBus,
+    PNPISABus,
+    PNPBus,
+    Vmcs,
+    ACPIBus,
+    MaximumInterfaceType
+} INTERFACE_TYPE, * PINTERFACE_TYPE;
 
 
 typedef struct struct_buffer
 {
-	void* SectionHandle;
-	DWORD offset;
-	unsigned int BusAddress;
-	PVOID PhysicalBaseAddress;
+    void* SectionHandle;
+    DWORD offset;
+    unsigned int BusAddress;
+    PVOID PhysicalBaseAddress;
 } struct_buffer;
 
 
 typedef struct _RTL_PROCESS_MODULE_INFORMATION
 {
-	HANDLE Section;
-	PVOID MappedBase;
-	PVOID ImageBase;
-	ULONG ImageSize;
-	ULONG Flags;
-	USHORT LoadOrderIndex;
-	USHORT InitOrderIndex;
-	USHORT LoadCount;
-	USHORT OffsetToFileName;
-	UCHAR FullPathName[256];
+    HANDLE Section;
+    PVOID MappedBase;
+    PVOID ImageBase;
+    ULONG ImageSize;
+    ULONG Flags;
+    USHORT LoadOrderIndex;
+    USHORT InitOrderIndex;
+    USHORT LoadCount;
+    USHORT OffsetToFileName;
+    UCHAR FullPathName[256];
 } RTL_PROCESS_MODULE_INFORMATION, * PRTL_PROCESS_MODULE_INFORMATION;
 
 typedef struct _RTL_PROCESS_MODULES
 {
-	ULONG NumberOfModules;
-	RTL_PROCESS_MODULE_INFORMATION Modules[1];
+    ULONG NumberOfModules;
+    RTL_PROCESS_MODULE_INFORMATION Modules[1];
 } RTL_PROCESS_MODULES, * PRTL_PROCESS_MODULES;
 //source: https://processhacker.sourceforge.io/doc/ntldr_8h_source.html
 
