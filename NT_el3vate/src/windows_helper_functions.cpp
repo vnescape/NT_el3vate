@@ -93,16 +93,18 @@ int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	//Source: https://labs.nettitude.com/blog/vm-detection-tricks-part-1-physical-memory-resource-maps/
 	CM_RESOURCE_LIST* resource_list = (CM_RESOURCE_LIST*)lpData;
 
+	ULONG64 start, size;
 	for (DWORD i = 0; i < resource_list->Count; i++)
 	{
 		for (DWORD j = 0; j < resource_list->List[0].PartialResourceList.Count; j++)
 		{
 			if (resource_list->List[i].PartialResourceList.PartialDescriptors[j].Type == 3)
 			{
-				if (regions != NULL)
+				if (regions == NULL)
 				{
-					regions->address = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Start.QuadPart;
-					regions->size = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Length;
+					start = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Start.QuadPart;
+					size = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Length;
+					printf("%p - %p\n", (void*)start, (void*)(start + size));
 					regions++;
 				}
 				regionCount++;

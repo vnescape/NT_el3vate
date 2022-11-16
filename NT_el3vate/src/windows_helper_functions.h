@@ -7,6 +7,7 @@
 #define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_descriptor
+#pragma pack(push,4)
 typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
     UCHAR  Type;
     UCHAR  ShareDisposition;
@@ -103,6 +104,7 @@ typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
         } Connection;
     } u;
 } CM_PARTIAL_RESOURCE_DESCRIPTOR, * PCM_PARTIAL_RESOURCE_DESCRIPTOR;
+#pragma pack(pop,4)
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_list
 typedef struct _CM_PARTIAL_RESOURCE_LIST {
