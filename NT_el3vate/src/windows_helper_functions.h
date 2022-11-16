@@ -21,7 +21,7 @@ typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
             ULONG            Length;
         } Port;
         struct {
-#if ...
+#if defined(NT_PROCESSOR_GROUPS)
             USHORT    Level;
             USHORT    Group;
 #else
@@ -40,7 +40,7 @@ typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
                     KAFFINITY Affinity;
                 } Raw;
                 struct {
-#if ...
+#if defined(NT_PROCESSOR_GROUPS)
                     USHORT    Level;
                     USHORT    Group;
 #else
