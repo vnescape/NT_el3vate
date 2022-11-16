@@ -85,6 +85,8 @@ void GetPhysicalMemoryLayout() {
 		free(lpData);
 		return;
 	}
+	CM_RESOURCE_LIST* resource_list = (CM_RESOURCE_LIST*)lpData;
+
 
 	free(lpData);
 	return;

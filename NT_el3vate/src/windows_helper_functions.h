@@ -112,18 +112,6 @@ typedef struct _CM_PARTIAL_RESOURCE_LIST {
     CM_PARTIAL_RESOURCE_DESCRIPTOR PartialDescriptors[1];
 } CM_PARTIAL_RESOURCE_LIST, * PCM_PARTIAL_RESOURCE_LIST;
 
-//Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_resource_list
-typedef struct _CM_RESOURCE_LIST {
-    ULONG                       Count;
-    CM_FULL_RESOURCE_DESCRIPTOR List[1];
-} CM_RESOURCE_LIST, * PCM_RESOURCE_LIST;
-
-//Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_full_resource_descriptor
-typedef struct _CM_FULL_RESOURCE_DESCRIPTOR {
-    INTERFACE_TYPE           InterfaceType;
-    ULONG                    BusNumber;
-    CM_PARTIAL_RESOURCE_LIST PartialResourceList;
-} CM_FULL_RESOURCE_DESCRIPTOR, * PCM_FULL_RESOURCE_DESCRIPTOR;
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_interface_type
 typedef enum _INTERFACE_TYPE {
@@ -148,6 +136,19 @@ typedef enum _INTERFACE_TYPE {
     ACPIBus,
     MaximumInterfaceType
 } INTERFACE_TYPE, * PINTERFACE_TYPE;
+
+//Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_full_resource_descriptor
+typedef struct _CM_FULL_RESOURCE_DESCRIPTOR {
+    INTERFACE_TYPE           InterfaceType;
+    ULONG                    BusNumber;
+    CM_PARTIAL_RESOURCE_LIST PartialResourceList;
+} CM_FULL_RESOURCE_DESCRIPTOR, * PCM_FULL_RESOURCE_DESCRIPTOR;
+
+//Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_resource_list
+typedef struct _CM_RESOURCE_LIST {
+    ULONG                       Count;
+    CM_FULL_RESOURCE_DESCRIPTOR List[1];
+} CM_RESOURCE_LIST, * PCM_RESOURCE_LIST;
 
 
 typedef struct struct_buffer
