@@ -181,5 +181,11 @@ typedef struct _RTL_PROCESS_MODULES
 } RTL_PROCESS_MODULES, * PRTL_PROCESS_MODULES;
 //source: https://processhacker.sourceforge.io/doc/ntldr_8h_source.html
 
+typedef struct MEMORY_REGION
+{
+    __int64 address;
+    __int64 size;
+} MEMORY_REGION;
+
 LPVOID EPROCESS_address(LPVOID ntoskernlBase);
 LPVOID ntoskernl_base(void);
