@@ -93,7 +93,7 @@ int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	//Source: https://labs.nettitude.com/blog/vm-detection-tricks-part-1-physical-memory-resource-maps/
 	CM_RESOURCE_LIST* resource_list = (CM_RESOURCE_LIST*)lpData;
 
-	ULONG64 start, size;
+	__int64 start, size;
 	for (DWORD i = 0; i < resource_list->Count; i++)
 	{
 		for (DWORD j = 0; j < resource_list->List[0].PartialResourceList.Count; j++)
