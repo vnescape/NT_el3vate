@@ -189,3 +189,4 @@ typedef struct MEMORY_REGION
 
 LPVOID EPROCESS_address(LPVOID ntoskernlBase);
 LPVOID ntoskernl_base(void);
+int GetPhysicalMemoryLayout(MEMORY_REGION* regions);

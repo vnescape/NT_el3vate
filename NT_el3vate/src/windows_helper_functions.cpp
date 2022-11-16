@@ -53,7 +53,10 @@ LPVOID ntoskernl_base(void) {
 	return nt_base;
 }
 
-void GetPhysicalMemoryLayout() {
+// the function will return the required count of MEMORY_REGION struct,
+// this can be used to determine the required amount of MEMORY_REGION
+// -1 will be returned on error
+int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	HKEY hKey = NULL;
 	LPCWSTR subKey = L"HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory";
 	LPCWSTR valueName = L".Translated";
@@ -61,33 +64,34 @@ void GetPhysicalMemoryLayout() {
 	DWORD lpType = NULL;
 	DWORD dwLength = NULL;
 	LPBYTE lpData = NULL;
+	int regionCount = 0;
 
 	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &hKey);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegOpenKeyEx() failed.\n");
-		return;
+		return -1;
 	}
 
 	// get the required size and store it in dwLength
 	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, NULL, &dwLength);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
-		return;
+		return -1;
 	}
 	lpData = (LPBYTE)malloc(dwLength);
 	if (lpData == nullptr) {
 		fprintf(stderr, "[!] malloc() failed.\n");
-		return;
+		return -1;
 	}
 	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, lpData, &dwLength);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
 		free(lpData);
-		return;
+		return -1;
 	}
 	CM_RESOURCE_LIST* resource_list = (CM_RESOURCE_LIST*)lpData;
 
 
 	free(lpData);
-	return;
+	return regionCount;
 }
