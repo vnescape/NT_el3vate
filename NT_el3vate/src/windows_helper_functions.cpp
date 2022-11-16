@@ -52,3 +52,26 @@ LPVOID ntoskernl_base(void) {
 
 	return nt_base;
 }
+
+void GetPhysicalMemoryLayout() {
+	HKEY hKey = NULL;
+	LPCWSTR subKey = L"HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory";
+	LPCWSTR valueName = L".Translated";
+	LSTATUS result = NULL;
+	DWORD lpType = NULL;
+	DWORD data = NULL;
+
+	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &hKey);
+	if (result != ERROR_SUCCESS) {
+		fprintf(stderr, "[!] RegOpenKeyEx() failed.\n");
+		return;
+	}
+
+	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, NULL, &data);
+	if (result != ERROR_SUCCESS) {
+		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
+		return;
+	}
+
+	return;
+}
