@@ -100,13 +100,9 @@ int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 		{
 			if (resource_list->List[i].PartialResourceList.PartialDescriptors[j].Type == 3)
 			{
-				if (regions == NULL)
-				{
-					start = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Start.QuadPart;
-					size = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Length;
-					printf("%p - %p\n", (void*)start, (void*)(start + size));
-					regions++;
-				}
+				start = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Start.QuadPart;
+				size = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Length;
+				printf("%p - %p\n", (void*)start, (void*)(start + size));
 				regionCount++;
 			}
 		}

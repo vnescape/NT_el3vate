@@ -7,54 +7,58 @@
 #define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_descriptor
+typedef LARGE_INTEGER PHYSICAL_ADDRESS, * PPHYSICAL_ADDRESS;
 #pragma pack(push,4)
 typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
-    UCHAR  Type;
-    UCHAR  ShareDisposition;
+    UCHAR Type;
+    UCHAR ShareDisposition;
     USHORT Flags;
     union {
         struct {
             PHYSICAL_ADDRESS Start;
-            ULONG            Length;
+            ULONG Length;
         } Generic;
         struct {
             PHYSICAL_ADDRESS Start;
-            ULONG            Length;
+            ULONG Length;
         } Port;
         struct {
 #if defined(NT_PROCESSOR_GROUPS)
-            USHORT    Level;
-            USHORT    Group;
+            USHORT Level;
+            USHORT Group;
 #else
-            ULONG     Level;
+            ULONG Level;
 #endif
-            ULONG     Vector;
+            ULONG Vector;
             KAFFINITY Affinity;
-        } Interrupt;
+    } Interrupt;
         struct {
             union {
                 struct {
-                    USHORT    Group;
-                    USHORT    Reserved;
-                    USHORT    MessageCount;
-                    ULONG     Vector;
+#if defined(NT_PROCESSOR_GROUPS)
+                    USHORT Group;
+#else
+                    USHORT Reserved;
+#endif
+                    USHORT MessageCount;
+                    ULONG Vector;
                     KAFFINITY Affinity;
                 } Raw;
                 struct {
 #if defined(NT_PROCESSOR_GROUPS)
-                    USHORT    Level;
-                    USHORT    Group;
+                    USHORT Level;
+                    USHORT Group;
 #else
-                    ULONG     Level;
+                    ULONG Level;
 #endif
-                    ULONG     Vector;
+                    ULONG Vector;
                     KAFFINITY Affinity;
                 } Translated;
-            } DUMMYUNIONNAME;
-        } MessageInterrupt;
+                } DUMMYUNIONNAME;
+            } MessageInterrupt;
         struct {
             PHYSICAL_ADDRESS Start;
-            ULONG            Length;
+            ULONG Length;
         } Memory;
         struct {
             ULONG Channel;
@@ -84,15 +88,15 @@ typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
         } DeviceSpecificData;
         struct {
             PHYSICAL_ADDRESS Start;
-            ULONG            Length40;
+            ULONG Length40;
         } Memory40;
         struct {
             PHYSICAL_ADDRESS Start;
-            ULONG            Length48;
+            ULONG Length48;
         } Memory48;
         struct {
             PHYSICAL_ADDRESS Start;
-            ULONG            Length64;
+            ULONG Length64;
         } Memory64;
         struct {
             UCHAR Class;
@@ -102,9 +106,10 @@ typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
             ULONG IdLowPart;
             ULONG IdHighPart;
         } Connection;
-    } u;
+        } u;
 } CM_PARTIAL_RESOURCE_DESCRIPTOR, * PCM_PARTIAL_RESOURCE_DESCRIPTOR;
 #pragma pack(pop,4)
+
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_list
 typedef struct _CM_PARTIAL_RESOURCE_LIST {

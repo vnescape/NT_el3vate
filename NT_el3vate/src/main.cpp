@@ -11,13 +11,6 @@
 
 int main(char argc, char** argv)
 {
-	HANDLE hPhys = NULL;
-	GetDevicePhysicalMemoryHandle(L"\\\\.\\ucorew64", &hPhys);
-	if (hPhys != NULL) {
-		fprintf(stderr, "Could not obtain Device PhysicalMemory\n");
-		exit(EXIT_FAILURE);
-	}
-	printf("\n\n\n");
 	GetPhysicalMemoryLayout(NULL);
 	return EXIT_SUCCESS;
 }
