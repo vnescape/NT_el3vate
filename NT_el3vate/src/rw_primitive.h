@@ -2,8 +2,8 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <stdio.h>
+#include <ntdef.h>
 
-#define PHYSICAL_ADDRESS	LARGE_INTEGER
 #define IOCTL_MapPhysicalMemoryToLinearSpace 0xFA002EE8
 #define IOCTL_UnmapPhysicalMemory 0xFA002EEC
 #define STATUS_SUCCESS 0x0
