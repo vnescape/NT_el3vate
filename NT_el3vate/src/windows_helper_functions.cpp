@@ -59,7 +59,8 @@ void GetPhysicalMemoryLayout() {
 	LPCWSTR valueName = L".Translated";
 	LSTATUS result = NULL;
 	DWORD lpType = NULL;
-	DWORD data = NULL;
+	DWORD dwLength = NULL;
+	LPBYTE data = NULL;
 
 	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &hKey);
 	if (result != ERROR_SUCCESS) {
@@ -67,11 +68,24 @@ void GetPhysicalMemoryLayout() {
 		return;
 	}
 
-	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, NULL, &data);
+	// get the required size and store it in dwLength
+	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, NULL, &dwLength);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
 		return;
 	}
+	data = (LPBYTE)malloc(dwLength);
+	if (data == nullptr) {
+		fprintf(stderr, "[!] malloc() failed.\n");
+		return;
+	}
+	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, data, &dwLength);
+	if (result != ERROR_SUCCESS) {
+		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
+		free(data);
+		return;
+	}
 
+	free(data);
 	return;
 }
