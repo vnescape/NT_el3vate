@@ -2,9 +2,9 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <stdio.h>
-#include <ntdef.h>
 
-#define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B#
+#define PHYSICAL_ADDRESS	LARGE_INTEGER
+#define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_descriptor
 typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
