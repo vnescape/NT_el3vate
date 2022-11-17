@@ -55,6 +55,8 @@ int main(char argc, char** argv)
 		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
 		return EXIT_FAILURE;
 	}
-	printf("Handle for PhysicalMemory: %p\n", (void*)hPhysicalMemory);
+	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
+	printf("Handle for PhysicalMemory: 0x%X\n", (void*)hPhysicalMemory);
+	system("pause");
 	return EXIT_SUCCESS;
 }
