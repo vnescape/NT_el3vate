@@ -11,6 +11,11 @@
 
 int main(char argc, char** argv)
 {
+	HANDLE device = INVALID_HANDLE_VALUE;
+	HANDLE hPhysical = NULL;
+	NTSTATUS status = FALSE;
+
+	DWORD bytesReturned = 0;
 	int memoryRegions = -1;
 
 	memoryRegions = GetPhysicalMemoryLayout(NULL);
@@ -33,5 +38,24 @@ int main(char argc, char** argv)
 	for (int i = 0; i < memoryRegions; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
 	}
+
+
+
+	device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
+
+	if (device == INVALID_HANDLE_VALUE)
+	{
+		fprintf(stderr, "> Could not open device: 0x%X\n", GetLastError());
+		return FALSE;
+	}
+
+	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
+	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &hPhysical, sizeof(hPhysical), &hPhysical, sizeof(hPhysical), &bytesReturned, (LPOVERLAPPED)NULL);
+	if (status == FALSE) {
+		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
+		return EXIT_FAILURE;
+	}
+	printf("%p", (void*)hPhysical);
+
 	return EXIT_SUCCESS;
 }
