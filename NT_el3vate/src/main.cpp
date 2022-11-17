@@ -12,7 +12,7 @@
 int main(char argc, char** argv)
 {
 	HANDLE device = INVALID_HANDLE_VALUE;
-	HANDLE hPhysical = NULL;
+	HANDLE hPhysicalMemory = NULL;
 	NTSTATUS status = FALSE;
 
 	DWORD bytesReturned = 0;
@@ -50,12 +50,11 @@ int main(char argc, char** argv)
 	}
 
 	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &hPhysical, sizeof(hPhysical), &hPhysical, sizeof(hPhysical), &bytesReturned, (LPOVERLAPPED)NULL);
+	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &hPhysicalMemory, sizeof(hPhysicalMemory), &hPhysicalMemory, sizeof(hPhysicalMemory), &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
 		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
 		return EXIT_FAILURE;
 	}
-	printf("%p", (void*)hPhysical);
-
+	printf("Handle for PhysicalMemory: %p\n", (void*)hPhysicalMemory);
 	return EXIT_SUCCESS;
 }
