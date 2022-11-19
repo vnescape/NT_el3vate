@@ -44,7 +44,7 @@ NTSTATUS UnmapPhysicalMemory(IOCTL_buffer* buffer) {
 	DWORD bytesReturned = 0;
 
 
-	printf("[ ] Calling UnmapPhysicalMemory\n");
+	printf("[ ] Calling UnmapPhysicalMemory 0x%p\n", UnmapPhysicalMemory);
 	status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, buffer,
 		sizeof(buffer), NULL, 0, &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {

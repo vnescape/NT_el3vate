@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <stdio.h>
+#include "windows_helper_functions.h"
 
 #define PHYSICAL_ADDRESS	LARGE_INTEGER
 #define IOCTL_MapPhysicalMemoryToLinearSpace 0xFA002EE8
