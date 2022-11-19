@@ -46,7 +46,7 @@ NTSTATUS UnmapPhysicalMemory(IOCTL_buffer* buffer) {
 
 	printf("[ ] Calling UnmapPhysicalMemory\n");
 	status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, buffer,
-		sizeof(buffer), NULL, 0, &bytesReturned, (LPOVERLAPPED)NULL);
+		sizeof(buffer), buffer, 0, &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
 		fprintf(stderr, "[!] UnmapPhysicalMemory failed with %X\n", status);
 		return EXIT_FAILURE;
