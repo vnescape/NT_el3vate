@@ -159,13 +159,13 @@ typedef struct _CM_RESOURCE_LIST {
 } CM_RESOURCE_LIST, * PCM_RESOURCE_LIST;
 
 
-typedef struct struct_buffer
+typedef struct IOCTL_buffer
 {
     void* SectionHandle;
     DWORD offset;
     unsigned int BusAddress;
     PVOID PhysicalBaseAddress;
-} struct_buffer;
+} IOCTL_buffer;
 
 
 typedef struct _RTL_PROCESS_MODULE_INFORMATION
