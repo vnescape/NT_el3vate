@@ -45,7 +45,7 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 	return true;
 }
 
-NTSTATUS UnmapPhysicalMemory(PDWORD64 buffer) {
+BOOLEAN UnmapPhysicalMemory(PDWORD64 buffer) {
 	NTSTATUS	ntStatus;
 
 	ntStatus = fNtUnmapViewOfSection
