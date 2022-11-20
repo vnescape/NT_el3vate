@@ -45,12 +45,21 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 	return true;
 }
 
-NTSTATUS UnmapPhysicalMemory(IOCTL_buffer* buffer) {
+NTSTATUS UnmapPhysicalMemory(PDWORD64 buffer) {
+	NTSTATUS	ntStatus;
+
+	ntStatus = fNtUnmapViewOfSection
+	(
+		GetCurrentProcess(),
+		buffer
+	);
+	if (!NT_SUCCESS(ntStatus)) return false;
+	return true;
+	/*
 	HANDLE device2 = INVALID_HANDLE_VALUE;
 	NTSTATUS status = FALSE;
-	DWORD bytesReturned = 0;
-
-
+	DWORD bytesReturned = 0; 
+	
 	printf("[ ] Calling UnmapPhysicalMemory\n");
 	status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, buffer,
 		sizeof(buffer), buffer, 0, &bytesReturned, (LPOVERLAPPED)NULL);
@@ -63,6 +72,7 @@ NTSTATUS UnmapPhysicalMemory(IOCTL_buffer* buffer) {
 	printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", bytesReturned, bytesReturned);
 
 	return status;
+	*/
 }
 
 // returns 0 on success and saves handle to hPhysicalMemory
