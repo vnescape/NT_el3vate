@@ -53,6 +53,7 @@ BOOLEAN UnmapPhysicalMemory(PDWORD64 buffer) {
 		GetCurrentProcess(),
 		buffer
 	);
+	// returns STATUS_NOT_MAPPED_VIEW...
 	if (!NT_SUCCESS(ntStatus)) return false;
 	return true;
 	/*

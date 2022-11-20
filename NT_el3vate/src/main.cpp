@@ -76,14 +76,10 @@ int main(char argc, char** argv)
 					system("pause");
 				}
 			}
-			IOCTL_buffer* buffer = (IOCTL_buffer*)malloc(sizeof(IOCTL_buffer));
-			buffer->SectionHandle = hPhysicalMemory;
-			buffer->PhysicalBaseAddress = buf;
-			if (UnmapPhysicalMemory(buf) == 1) {
+			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed");
 				return EXIT_FAILURE;
 			}
-			free(buffer);
 		}
 	}
 
