@@ -63,7 +63,7 @@ int main(char argc, char** argv)
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
-	/*
+	
 	printf("\n\nTrying to find SYSTEM in physical memory...\n");
 	for (int i = 0; i < memRegionsCount; i++) {
 		__int64 start = memRegion[i].address;
@@ -78,7 +78,7 @@ int main(char argc, char** argv)
 					system("pause");
 				}
 			}
-			if (UnmapPhysicalMemory(&buf) == FALSE) {
+			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed");
 				return EXIT_FAILURE;
 			}
@@ -89,6 +89,5 @@ int main(char argc, char** argv)
 
 	CloseHandle(hPhysicalMemory);
 	CloseHandle(device);
-	*/
 	return EXIT_SUCCESS;
 }
