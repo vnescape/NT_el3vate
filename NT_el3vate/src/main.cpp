@@ -71,7 +71,11 @@ int main(char argc, char** argv)
 		printf("%p - %p\n", (void*)start, (void*)end);
 
 		for (__int64 page = start; page < end; page = page + 0x1000) {
-			MapPhysicalMemory(hPhysicalMemory, page, 0x1000, buf);
+			if (MapPhysicalMemory(hPhysicalMemory, page, 0x1000, buf) == FALSE) {
+				fprintf(stderr, "[!] MapPhysicalMemory failed");
+				return EXIT_FAILURE;
+			}
+
 			for (int pageOffset = 0; pageOffset < 0x1000; pageOffset++) {
 				if (memcmp("System\0\0\0\0\0\0\0\0\0", (unsigned char*)(buf + i), 14) == 0) {
 					printf("Found SYSTEM!\n");
