@@ -15,6 +15,13 @@ using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	);
 myNtMapViewOfSection fNtMapViewOfSection = (myNtMapViewOfSection)(GetProcAddress(GetModuleHandleA("ntdll"), "NtMapViewOfSection"));
 
+using myNtUnmapViewOfSection = NTSTATUS(NTAPI*)(
+	HANDLE SectionHandle,
+	PVOID BaseAddress
+	);
+myNtUnmapViewOfSection fNtUnmapViewOfSection = (myNtUnmapViewOfSection)(GetProcAddress(GetModuleHandleA("ntdll"), "NtUnmapViewOfSection"));
+
+
 BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PDWORD64 VirtualAddress)
 {
 	NTSTATUS			ntStatus;
