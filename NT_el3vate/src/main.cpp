@@ -77,12 +77,7 @@ int main(char argc, char** argv)
 				return EXIT_FAILURE;
 			}
 
-			for (int pageOffset = 0; pageOffset < 0x1000; pageOffset++) {
-				if (memcmp("System\0\0\0\0\0\0\0\0\0", (unsigned char*)(buf + i), 14) == 0) {
-					printf("Found SYSTEM!\n");
-					system("pause");
-				}
-			}
+			memset(*buf, 0x47, 0x1000);
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed");
 				return EXIT_FAILURE;
