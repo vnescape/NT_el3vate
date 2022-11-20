@@ -22,7 +22,7 @@ using myNtUnmapViewOfSection = NTSTATUS(NTAPI*)(
 myNtUnmapViewOfSection fNtUnmapViewOfSection = (myNtUnmapViewOfSection)(GetProcAddress(GetModuleHandleA("ntdll"), "NtUnmapViewOfSection"));
 
 
-BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PDWORD64 VirtualAddress)
+BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PVOID* VirtualAddress)
 {
 	NTSTATUS			ntStatus;
 	PHYSICAL_ADDRESS	SectionOffset;
@@ -32,7 +32,7 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 	(
 		PhysicalMemory,
 		GetCurrentProcess(),
-		(PVOID*)VirtualAddress,
+		VirtualAddress,
 		0L,
 		Length,
 		&SectionOffset,
@@ -45,15 +45,15 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 	return true;
 }
 
-BOOLEAN UnmapPhysicalMemory(PDWORD64 buffer) {
+BOOLEAN UnmapPhysicalMemory(PVOID** buffer) {
 	NTSTATUS	ntStatus;
 
 	ntStatus = fNtUnmapViewOfSection
 	(
 		GetCurrentProcess(),
-		buffer
+		**buffer
 	);
-	// returns STATUS_NOT_MAPPED_VIEW...
+	// returns STATUS_NOT_MAPPED_VIEW(0xC0000019)...
 	if (!NT_SUCCESS(ntStatus)) return false;
 	return true;
 	/*

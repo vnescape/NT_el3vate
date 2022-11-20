@@ -20,6 +20,6 @@ typedef struct Phys32Struct
 //source: https://github.com/ellysh/InpOut32/blob/fa28b483c4ab9e18f6d437fad390022181aa37f9/driver/hwinterfacedrv.h#L15
 
 
-BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PDWORD64 VirtualAddress);
-BOOLEAN UnmapPhysicalMemory(PDWORD64 buffer);
+BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PVOID* VirtualAddress);
+BOOLEAN UnmapPhysicalMemory(PVOID** buffer);
 int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory);

@@ -57,7 +57,7 @@ int main(char argc, char** argv)
 	printf("Handle for PhysicalMemory: 0x%p\n", hPhysicalMemory);
 	system("pause");
 
-	PDWORD64 buf = (PDWORD64)malloc(0x1000);
+	PVOID* buf = (PVOID*)malloc(0x1000);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
@@ -76,7 +76,7 @@ int main(char argc, char** argv)
 					system("pause");
 				}
 			}
-			if (UnmapPhysicalMemory(buf) == FALSE) {
+			if (UnmapPhysicalMemory(&buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed");
 				return EXIT_FAILURE;
 			}
