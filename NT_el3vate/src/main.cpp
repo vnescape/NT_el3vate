@@ -65,9 +65,9 @@ int main(char argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 	
-	printf("\n\nTHIS WILL DELETE EVERYTHING IN PHYSICAL MEMORY!!!\n");
+	printf("THIS WILL DELETE EVERYTHING IN PHYSICAL MEMORY!!! CAUSING A BSOD!!!!\n");
 	system("pause");
-	for (int i = 0; i < memRegionsCount; i++) {
+	for (int i = 3; i < memRegionsCount; i++) {
 		__int64 start = memRegion[i].address;
 		__int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
