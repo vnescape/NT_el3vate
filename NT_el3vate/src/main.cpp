@@ -9,6 +9,7 @@
 #include "windows_helper_functions.h"
 
 
+
 int main(char argc, char** argv)
 {
 	HANDLE device = INVALID_HANDLE_VALUE;
