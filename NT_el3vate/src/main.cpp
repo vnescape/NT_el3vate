@@ -77,17 +77,22 @@ int main(char argc, char** argv)
 	unsigned char patt[14] = {
 		0x61, 0x00, 0x70, 0x00, 0x69, 0x00, 0x2d, 0x00, 0x6d, 0x00, 0x73, 0x00, 0x2d, 00
 	};
+
+	// go through mapped physical memory regions
 	for (int i = 5; i < memRegionsCount; i++) {
 		unsigned __int64 start = memRegion[i].address;
 		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
 
+		// go through each page in memory region
 		for (__int64 page = start; page < end; page = page + 0x1000) {
 			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed");
 				return EXIT_FAILURE;
 			}
 			PVOID castedBuf = *buf;
+
+			// go through page byte by byte and search for pattern
 			for (unsigned int offset = 0; offset < (0xfff - sizeof(patt)); offset++) {
 				castedBuf = (unsigned char*)castedBuf + 1;
 				if (memcmp(castedBuf, patt, sizeof(patt)) == 0)
