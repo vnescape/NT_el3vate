@@ -81,7 +81,7 @@ int main(char argc, char** argv)
 	patt[15] = 0x02;
 
 	// go through mapped physical memory regions
-	for (int i = 5; i < memRegionsCount; i++) {
+	for (int i = 0; i < memRegionsCount; i++) {
 		unsigned __int64 start = memRegion[i].address;
 		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
