@@ -191,8 +191,8 @@ typedef struct _RTL_PROCESS_MODULES
 
 typedef struct MEMORY_REGION
 {
-    __int64 address;
-    __int64 size;
+    unsigned __int64 address;
+    unsigned __int64 size;
 } MEMORY_REGION;
 
 LPVOID EPROCESS_address(LPVOID ntoskernlBase);
