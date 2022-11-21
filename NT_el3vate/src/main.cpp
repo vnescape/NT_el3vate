@@ -85,6 +85,7 @@ int main(char argc, char** argv)
 		unsigned __int64 start = memRegion[i].address;
 		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
+		fflush(stdout);
 
 		// go through each page in memory region
 		for (__int64 page = start; page < end; page = page + 0x1000) {
@@ -99,8 +100,7 @@ int main(char argc, char** argv)
 				castedBuf = (unsigned char*)castedBuf + 1;
 				if (memcmp(castedBuf, patt, sizeof(patt)) == 0)
 				{
-					printf("\nFound pattern at: %p\n", (void*)(buf + offset));
-					system("pause");
+					printf("\nFound pattern at: %p\n", (void*)(page + offset));
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
