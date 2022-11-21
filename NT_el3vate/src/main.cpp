@@ -74,8 +74,8 @@ int main(char argc, char** argv)
 	}
 
 	//random pattern
-	unsigned char patt[14] = {
-		0x61, 0x00, 0x70, 0x00, 0x69, 0x00, 0x2d, 0x00, 0x6d, 0x00, 0x73, 0x00, 0x2d, 00
+	unsigned char patt[] = {
+		"System\0\0\0\0\0\0\0\0\0"
 	};
 
 	// go through mapped physical memory regions
