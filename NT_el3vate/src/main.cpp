@@ -88,7 +88,7 @@ int main(char argc, char** argv)
 		fflush(stdout);
 
 		// go through each page in memory region
-		for (__int64 page = start; page < end; page = page + 0x1000) {
+		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
 			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed");
 				return EXIT_FAILURE;
