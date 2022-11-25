@@ -159,7 +159,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 			}
 		}
 	}
-
+	free(memRegion);
 	free(buf);
 	return 0;
 }
