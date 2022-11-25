@@ -98,3 +98,66 @@ int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory) {
 
 	return 0;
 }
+
+int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, unsigned __int64* locations) {
+	int memRegionsCount = -1;
+
+	memRegionsCount = GetPhysicalMemoryLayout(NULL);
+	if (memRegionsCount == -1) {
+		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
+		return -1;
+	}
+	MEMORY_REGION* memRegion = (MEMORY_REGION*)calloc(memRegionsCount, sizeof(MEMORY_REGION));
+	if (memRegion == NULL) {
+		fprintf(stderr, "[!] calloc() failed.\n");
+		return -1;
+	}
+	memRegionsCount = GetPhysicalMemoryLayout(memRegion);
+	if (memRegionsCount == -1) {
+		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
+		return -1;
+	}
+
+	printf("physical memory regions\n");
+	for (int i = 0; i < memRegionsCount; i++) {
+		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
+	}
+
+
+	PVOID* buf = (PVOID*)malloc(0x1000);
+	if (buf == 0) {
+		exit(EXIT_FAILURE);
+	}
+	// go through mapped physical memory regions
+	for (int i = 0; i < memRegionsCount; i++) {
+		unsigned __int64 start = memRegion[i].address;
+		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
+		printf("%p - %p\n", (void*)start, (void*)end);
+		fflush(stdout);
+
+		// go through each page in memory region
+		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
+			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
+				fprintf(stderr, "[!] MapPhysicalMemory failed");
+				return -1;
+			}
+			PVOID castedBuf = *buf;
+
+			// go through page byte by byte and search for pattern
+			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++) {
+				castedBuf = (unsigned char*)castedBuf + 1;
+				if (memcmp(castedBuf, pattern, patternLength) == 0)
+				{
+					printf("\nFound pattern at: %p\n", (void*)(page + offset));
+				}
+			}
+			if (UnmapPhysicalMemory(buf) == FALSE) {
+				printf("UnmapPhysicalMemory failed");
+				return -1;
+			}
+		}
+	}
+
+	free(buf);
+	return 0;
+}
