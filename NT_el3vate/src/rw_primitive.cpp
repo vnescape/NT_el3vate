@@ -1,5 +1,6 @@
 #include "rw_primitive.h"
 #include "windows_helper_functions.h"
+#include <vector>
 
 using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	HANDLE SectionHandle,
@@ -99,7 +100,7 @@ int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory) {
 	return 0;
 }
 
-int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, unsigned __int64* locations) {
+int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
 	int memRegionsCount = -1;
 
 	memRegionsCount = GetPhysicalMemoryLayout(NULL);
@@ -148,6 +149,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				castedBuf = (unsigned char*)castedBuf + 1;
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
+					locations.push_back(page + offset);
 					printf("\nFound pattern at: %p\n", (void*)(page + offset));
 				}
 			}

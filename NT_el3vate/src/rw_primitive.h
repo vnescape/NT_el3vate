@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <Windows.h>
 #include <winternl.h>
 #include <stdio.h>
@@ -23,4 +24,4 @@ typedef struct Phys32Struct
 BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PVOID* VirtualAddress);
 BOOLEAN UnmapPhysicalMemory(PVOID* buffer);
 int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory);
-int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, unsigned __int64* locations);
+int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations);

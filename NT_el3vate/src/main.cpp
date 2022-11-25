@@ -4,6 +4,7 @@
 #include <winternl.h>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 
 #include "rw_primitive.h"
 #include "windows_helper_functions.h"
@@ -52,10 +53,13 @@ int main(char argc, char** argv)
 	};
 	//UCHAR PriorityClass;
 	patt[15] = 0x02;
-	if (searchPhysicalMemory(patt, 16, hPhysicalMemory, NULL) == -1) {
+
+	std::vector <unsigned __int64> locations;
+	if (searchPhysicalMemory(patt, 16, hPhysicalMemory, locations) == -1) {
 		fprintf(stderr, "[!] searchPhysicalMemory failed.\n");
 		return EXIT_FAILURE;
 	}
+
 
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
