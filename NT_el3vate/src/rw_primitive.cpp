@@ -56,24 +56,6 @@ BOOLEAN UnmapPhysicalMemory(PVOID* buffer) {
 	// returns STATUS_NOT_MAPPED_VIEW(0xC0000019)...
 	if (!NT_SUCCESS(ntStatus)) return false;
 	return true;
-	/*
-	HANDLE device2 = INVALID_HANDLE_VALUE;
-	NTSTATUS status = FALSE;
-	DWORD bytesReturned = 0; 
-	
-	printf("[ ] Calling UnmapPhysicalMemory\n");
-	status = DeviceIoControl(device2, IOCTL_UnmapPhysicalMemory, buffer,
-		sizeof(buffer), buffer, 0, &bytesReturned, (LPOVERLAPPED)NULL);
-	if (status == FALSE) {
-		fprintf(stderr, "[!] UnmapPhysicalMemory failed with %X\n", status);
-		return EXIT_FAILURE;
-		//https://github.com/ellysh/InpOut32/blob/master/driver/hwinterfacedrv.c
-	}
-	printf("[*] UnmapPhysicalMemory 0x%X called successfully\n", IOCTL_UnmapPhysicalMemory);
-	printf("[*] Buffer from the kernel land: %02X. Received buffer size: %d\n", bytesReturned, bytesReturned);
-
-	return status;
-	*/
 }
 
 // returns 0 on success and saves handle to hPhysicalMemory
