@@ -32,5 +32,8 @@
     <ClInclude Include="src\windows_helper_functions.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="src\windows_struct.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

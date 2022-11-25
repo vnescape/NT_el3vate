@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="src\rw_primitive.h" />
     <ClInclude Include="src\windows_helper_functions.h" />
+    <ClInclude Include="src\windows_struct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
