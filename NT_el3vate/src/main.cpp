@@ -52,7 +52,10 @@ int main(char argc, char** argv)
 	};
 	//UCHAR PriorityClass;
 	patt[15] = 0x02;
-	searchPhysicalMemory(patt,16, hPhysicalMemory, NULL);
+	if (searchPhysicalMemory(patt, 16, hPhysicalMemory, NULL) == -1) {
+		fprintf(stderr, "[!] searchPhysicalMemory failed.\n");
+		return EXIT_FAILURE;
+	}
 
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
