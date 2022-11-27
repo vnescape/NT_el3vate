@@ -42,7 +42,7 @@ LPVOID ntoskernl_base(void) {
 			nt_base = processModules->Modules[i].ImageBase;
 
 			printf("\n*****************************************************");
-			printf("\nImage base: %#p", processModules->Modules[i].ImageBase);
+			printf("\nImage base: %p", processModules->Modules[i].ImageBase);
 			printf("\nImage name: %s", processModules->Modules[i].FullPathName + processModules->Modules[i].OffsetToFileName);
 			printf("\nImage full path: %s", processModules->Modules[i].FullPathName);
 			printf("\nImage size: %d", processModules->Modules[i].ImageSize);
