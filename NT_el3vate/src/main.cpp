@@ -18,7 +18,7 @@ void printBytes(void* ptr, int size)
 	printf("\n");
 }
 
-int main(char argc, char** argv)
+int main(int argc, char** argv)
 {
 	HANDLE device = INVALID_HANDLE_VALUE;
 	NTSTATUS status = FALSE;
