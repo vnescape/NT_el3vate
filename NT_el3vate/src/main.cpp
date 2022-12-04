@@ -9,6 +9,8 @@
 #include "rw_primitive.h"
 #include "windows_helper_functions.h"
 
+
+
 void printBytes(void* ptr, int size)
 {
 	unsigned char* p = (unsigned char*)ptr;
@@ -60,6 +62,10 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
+	unsigned __int64 patternLocation = locations.back(); // probabilistically the correct value?
+	//0x13aa7e5e7 - 0x13aa7e040 = 0x5A7 (Just a example to calculate the offset)
+	unsigned __int64 EPROCESSBaseOfSystem = patternLocation - 0x5A7;
+	printf("EPROCESS Base of System: %p\n", (void*)EPROCESSBaseOfSystem);
 
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
