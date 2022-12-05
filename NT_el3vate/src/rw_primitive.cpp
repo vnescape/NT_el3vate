@@ -170,7 +170,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 					}
 					else
 					{
-						fprintf(stderr, "Struct does not fit into one page. Trying mapping 4 pages.\n");
+						fprintf(stderr, "Struct does not fit into one page. Try mapping 4 pages.\n");
 
 						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
 							fprintf(stderr, "[!] MapPhysicalMemory failed");
