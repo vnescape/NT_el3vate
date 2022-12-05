@@ -27,6 +27,8 @@ int main(int argc, char** argv)
 
 	DWORD bytesReturned = 0;
 
+	SetConsoleTitleA("NT_el3vate");
+
 	device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
 
 	if (device == INVALID_HANDLE_VALUE)
