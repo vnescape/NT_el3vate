@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 	unsigned __int64 patternLocation = locations.back(); // probabilistically the correct value?
 	//0x13aa7e5e7 - 0x13aa7e040 = 0x5A7 (Just a example to calculate the offset)
 	unsigned __int64 EPROCESSBaseOfSystem = patternLocation - 0x5A7;
-	printf("EPROCESS Base of System: %p\n", (void*)EPROCESSBaseOfSystem);
+	printf("\n------------------------------------\nEPROCESS Base of System: %p\n", (void*)EPROCESSBaseOfSystem);
 
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
