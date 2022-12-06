@@ -146,7 +146,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 		// go through each page in memory region
 		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
 			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
-				fprintf(stderr, "[!] MapPhysicalMemory failed");
+				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 				return -1;
 			}
 			PVOID castedBuf = *buf;
@@ -164,7 +164,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
-				printf("UnmapPhysicalMemory failed");
+				printf("UnmapPhysicalMemory failed\n");
 				return -1;
 			}
 		}
@@ -229,7 +229,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 		// go through each page in memory region
 		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
 			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
-				fprintf(stderr, "[!] MapPhysicalMemory failed");
+				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 				return -1;
 			}
 			PVOID castedBuf = *buf;
@@ -260,7 +260,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 						fprintf(stderr, "Struct does not fit into one page. Try mapping 4 pages.\n");
 
 						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
-							fprintf(stderr, "[!] MapPhysicalMemory failed");
+							fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 							return -1;
 						}
 						patternLocation = page + offset;
@@ -299,7 +299,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
-				printf("UnmapPhysicalMemory failed");
+				printf("UnmapPhysicalMemory failed\n");
 				return -1;
 			}
 		}
