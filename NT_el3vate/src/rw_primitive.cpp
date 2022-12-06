@@ -250,7 +250,7 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 						if (*((unsigned __int64*)UniqueProcessId) == 0x4)
 						{
 							void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
-							printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
+							printf("[%d] Found EPROCESS base of System at: %p\n", patternCount, physicalEPROCESSBase);
 							patternCount++;
 							//return (unsigned __int64)physicalEPROCESSBase;
 						}
