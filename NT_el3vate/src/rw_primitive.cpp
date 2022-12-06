@@ -250,9 +250,9 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 						if (*((unsigned __int64*)UniqueProcessId) == 0x4)
 						{
 							void* physicalEPROCESSBase = (void*)(page + offset - 0x5A7);
-							printf("[%d] Found pattern at: %p\n", patternCount, physicalEPROCESSBase);
+							printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
 							patternCount++;
-							return (unsigned __int64)physicalEPROCESSBase;
+							//return (unsigned __int64)physicalEPROCESSBase;
 						}
 					}
 					else
@@ -285,9 +285,9 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 							{
 								// PID of System is 4
 								void* physicalEPROCESSBase = (void*)(page + offset - 0x5A7);
-								printf("[%d] Found pattern at: %p\n", patternCount, physicalEPROCESSBase);
+								printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
 								patternCount++;
-								return (unsigned __int64)physicalEPROCESSBase;
+								//return (unsigned __int64)physicalEPROCESSBase;
 							}
 						}
 						else
