@@ -4,6 +4,8 @@
 
 #define PHYSICAL_ADDRESS	LARGE_INTEGER
 #define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
+#define _EPROCESS_ImageFileName_offset 0x5a8
+#define _EPROCESS_UniqueProcessId_offset 0x440
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_descriptor
 //slide modifications were made in comparison to msdn
