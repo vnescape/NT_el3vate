@@ -135,7 +135,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	if (fourPages == 0) {
 		exit(EXIT_FAILURE);
 	}
-	unsigned int patternFoundCount = 0;
+	unsigned int patternCount = 0;
 	// go through mapped physical memory regions
 	for (int i = 0; i < memRegionsCount; i++) {
 		unsigned __int64 start = memRegion[i].address;
@@ -159,8 +159,8 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				{
 					unsigned __int64 patternLocation = page + offset;
 					locations.push_back(patternLocation);
-					printf("[%d] Found pattern at: %p\n", patternFoundCount ,(void*)(page + offset));
-					patternFoundCount++;
+					printf("[%d] Found pattern at: %p\n", patternCount,(void*)(page + offset));
+					patternCount++;
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
@@ -203,10 +203,11 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 		return -1;
 	}
 
-	printf("physical memory regions\n");
+	printf("[+] Physical memory regions\n");
 	for (int i = 0; i < memRegionsCount; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
 	}
+	printf("\n[ ]Scanning through each physical memory region...\n");
 
 
 	PVOID* buf = (PVOID*)malloc(0x1000);
@@ -217,6 +218,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 	if (fourPages == 0) {
 		exit(EXIT_FAILURE);
 	}
+	unsigned int patternCount = 0;
 	// go through mapped physical memory regions
 	for (int i = 0; i < memRegionsCount; i++) {
 		unsigned __int64 start = memRegion[i].address;
@@ -248,7 +250,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 						if (*((unsigned __int64*)UniqueProcessId) == 0x4)
 						{
 							void* physicalEPROCESSBase = (void*)(page + offset - 0x5A7);
-							printf("\nFound EPROCESS base of System at: %p\n", physicalEPROCESSBase);
+							printf("[%d] Found pattern at: %p\n", patternCount, physicalEPROCESSBase);
+							patternCount++;
 							return (unsigned __int64)physicalEPROCESSBase;
 						}
 					}
@@ -282,8 +285,9 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 							{
 								// PID of System is 4
 								void* physicalEPROCESSBase = (void*)(page + offset - 0x5A7);
-								printf("\nFound EPROCESS base of System at: %p\n", physicalEPROCESSBase);
-								//return (unsigned __int64)physicalEPROCESSBase;
+								printf("[%d] Found pattern at: %p\n", patternCount, physicalEPROCESSBase);
+								patternCount++;
+								return (unsigned __int64)physicalEPROCESSBase;
 							}
 						}
 						else
@@ -300,6 +304,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int proces
 			}
 		}
 	}
+	printf("[+] Scanned through every physical memory region\n");
+
 	free(memRegion);
 	free(fourPages);
 	free(buf);
