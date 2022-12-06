@@ -219,8 +219,8 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 		exit(EXIT_FAILURE);
 	}
 	unsigned int patternCount = 0;
-	// go through mapped physical memory regions
-	for (int i = 0; i < memRegionsCount; i++) {
+	// go through mapped physical memory regions backwards as _EPROCESS is probabilistically at higher addresses
+	for (int i = memRegionsCount - 1; i >= 0; i--) {
 		unsigned __int64 start = memRegion[i].address;
 		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
