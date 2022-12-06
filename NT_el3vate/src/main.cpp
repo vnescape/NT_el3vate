@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
-	printf("[+] Handle for PhysicalMemory: 0x%p\n", hPhysicalMemory);
+	printf("[+] Handle to PhysicalMemory: 0x%p\n", hPhysicalMemory);
 
 	//UCHAR ImageFileName[15];
 	unsigned char patt[16] = {
