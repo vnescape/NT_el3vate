@@ -258,7 +258,6 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 					else
 					{
 						//fprintf(stderr, "Struct does not fit into one page. Try mapping 4 pages.\n");
-
 						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
 							fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 							return -1;
@@ -294,10 +293,16 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 						{
 							//fprintf(stderr, "Struct does not fit into four page.\n");
 						}
+						memset(fourPages, 0, 0x4000);
+						if (UnmapPhysicalMemory(fourPages) == FALSE) {
+							printf("UnmapPhysicalMemory failed\n");
+							return -1;
+						}
 					}
 				}
 				castedBuf = (unsigned char*)castedBuf + 1;
 			}
+			memset(buf, 0, 0x1000);
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed\n");
 				return -1;
