@@ -71,7 +71,8 @@ int main(int argc, char** argv)
 	printf("\n------------------------------------\nEPROCESS Base of System: %p\n", (void*)EPROCESSBaseOfSystem);
 	*/
 
-	unsigned __int64 eproc = GetEPROCESSPhysicalBase(NULL, 0, hPhysicalMemory);
+	unsigned __int64 eproc = GetEPROCESSPhysicalBaseOfSystem(hPhysicalMemory);
+	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
 	printf("\n------------------------------------\nEPROCESS Base of System: %p\n", (void*)eproc);
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);

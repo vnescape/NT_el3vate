@@ -25,4 +25,4 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 BOOLEAN UnmapPhysicalMemory(PVOID* buffer);
 int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory);
 int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations);
-unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int processID, HANDLE hPhysicalMemory);
+unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory);

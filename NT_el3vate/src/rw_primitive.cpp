@@ -176,7 +176,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	return 0;
 }
 
-unsigned __int64 GetEPROCESSPhysicalBase(LPWSTR processName, unsigned int processID, HANDLE hPhysicalMemory) {
+unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 	#define _EPROCESS_ImageFileName 0x5a8
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
