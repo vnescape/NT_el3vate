@@ -293,7 +293,7 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 						{
 							//fprintf(stderr, "Struct does not fit into four page.\n");
 						}
-						memset(fourPages, 0, 0x4000);
+						//memset(fourPages, 0, 0x4000); unnecessary
 						if (UnmapPhysicalMemory(fourPages) == FALSE) {
 							printf("UnmapPhysicalMemory failed\n");
 							return -1;
@@ -302,7 +302,7 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 				}
 				castedBuf = (unsigned char*)castedBuf + 1;
 			}
-			memset(buf, 0, 0x1000);
+			//memset(buf, 0, 0x1000); unnecessary
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("UnmapPhysicalMemory failed\n");
 				return -1;
