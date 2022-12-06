@@ -130,11 +130,12 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
+
 	PVOID* fourPages = (PVOID*)malloc(0x4000);
 	if (fourPages == 0) {
 		exit(EXIT_FAILURE);
 	}
-
+	unsigned int patternFoundCount = 0;
 	// go through mapped physical memory regions
 	for (int i = 0; i < memRegionsCount; i++) {
 		unsigned __int64 start = memRegion[i].address;
@@ -158,7 +159,8 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				{
 					unsigned __int64 patternLocation = page + offset;
 					locations.push_back(patternLocation);
-					printf("[ ] Found pattern at: %p\n", (void*)(page + offset));
+					printf("[%d] Found pattern at: %p\n", patternFoundCount ,(void*)(page + offset));
+					patternFoundCount++;
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
