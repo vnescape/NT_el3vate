@@ -4,6 +4,8 @@
 
 #define PHYSICAL_ADDRESS	LARGE_INTEGER
 #define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
+
+// Those offsets are for Windows 10 21H2
 #define _EPROCESS_ImageFileName_offset 0x5a8
 #define _EPROCESS_UniqueProcessId_offset 0x440
 
