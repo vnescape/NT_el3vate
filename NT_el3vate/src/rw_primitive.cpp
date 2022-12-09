@@ -247,16 +247,11 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
-					unsigned __int64 patternLocation = page + offset;
-					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedBuf - _EPROCESS_ImageFileName_offset;
-					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
-
 					// Try mapping 4 pages so the struct can fit into the mapped region
 					if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
 						fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 						return -1;
 					}
-					patternLocation = page + offset;
 
 					PVOID castedFourPages = *fourPages;
 					// get middle of fourPages
@@ -266,16 +261,16 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 					// add pattern offset
 					castedFourPages = (unsigned char*)castedFourPages + offset;
 
-					EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
+					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
 
-					UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
+					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
 
 					// TODO: Check physical address ranges
 					if (*((unsigned __int64*)UniqueProcessId) == pid)
 					{
 						// PID of System is 4
 						void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
-						printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
+						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", patternCount, processName, physicalEPROCESSBase);
 						patternCount++;
 						locations.push_back((unsigned __int64)physicalEPROCESSBase);
 					}
