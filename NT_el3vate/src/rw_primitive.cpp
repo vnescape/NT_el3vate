@@ -176,7 +176,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	return 0;
 }
 
-unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(const char* processName ,int pid ,HANDLE hPhysicalMemory) {
+unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDLE hPhysicalMemory) {
 
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
