@@ -176,7 +176,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	return 0;
 }
 
-unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
+unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(const char* processName ,int pid ,HANDLE hPhysicalMemory) {
 
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
@@ -218,6 +218,7 @@ unsigned __int64 GetEPROCESSPhysicalBaseOfSystem(HANDLE hPhysicalMemory) {
 	if (fourPages == 0) {
 		exit(EXIT_FAILURE);
 	}
+
 	unsigned int patternCount = 0;
 	// go through mapped physical memory regions backwards as _EPROCESS is probabilistically at higher addresses
 	for (int i = memRegionsCount - 1; i >= 0; i--) {

