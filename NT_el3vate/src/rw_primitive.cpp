@@ -262,13 +262,12 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 					castedFourPages = (unsigned char*)castedFourPages + offset;
 
 					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
-
 					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
-
+					unsigned char* Token = EPROCESSBaseOfSystem + _EPROCESS_Token_offset;
 					// TODO: Check physical address ranges
-					if (*((unsigned __int64*)UniqueProcessId) == pid)
+					// Token check might not work as intended
+					if (*(unsigned __int64*)UniqueProcessId == pid && *(unsigned __int64*)Token != 0)
 					{
-						// PID of System is 4
 						void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
 						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", patternCount, processName, physicalEPROCESSBase);
 						patternCount++;
