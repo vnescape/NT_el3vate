@@ -180,11 +180,16 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
-	unsigned char pattern[16] = {
-		"System\0\0\0\0\0\0\0\0\0",
-	};
+	unsigned char pattern[16] = { 0 };
+
 	//UCHAR PriorityClass;
 	pattern[15] = 0x02;
+
+	// Copy processName into pattern
+	for (int i = 0; i < 16; i++) {
+		if (processName[i] == '\0') { break; }
+		pattern[i] = processName[i];
+	}
 	unsigned int patternLength = 16;
 
 	memRegionsCount = GetPhysicalMemoryLayout(NULL);
@@ -278,22 +283,17 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 						EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
 
 						UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
-						if (1 == 1 || (unsigned __int64)castedFourPages <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)castedFourPages)
+
+						// TODO: Check physical address ranges 
+						if (*((unsigned __int64*)UniqueProcessId) == 0x4)
 						{
-							//printf("Struct does fit into four pages.\n");
-							if (*((unsigned __int64*)UniqueProcessId) == 0x4)
-							{
-								// PID of System is 4
-								void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
-								printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
-								patternCount++;
-								//return (unsigned __int64)physicalEPROCESSBase;
-							}
+							// PID of System is 4
+							void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
+							printf("[%d] Found EPROCESS Base of System at: %p\n", patternCount, physicalEPROCESSBase);
+							patternCount++;
+							//return (unsigned __int64)physicalEPROCESSBase;
 						}
-						else
-						{
-							//fprintf(stderr, "Struct does not fit into four page.\n");
-						}
+
 						//memset(fourPages, 0, 0x4000); unnecessary
 						if (UnmapPhysicalMemory(fourPages) == FALSE) {
 							printf("UnmapPhysicalMemory failed\n");
