@@ -77,6 +77,8 @@ int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory) {
 	}
 
 	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
+	// UCOREW64.SYS SHA-256
+	// a7c8f4faf3cbb088cac7753d81f8ec4c38ccb97cd9da817741f49272e8d01200
 	status = DeviceIoControl(device,
 		IOCTL_MapPhysicalMemoryToLinearSpace,
 		&hPhysicalMemory,
