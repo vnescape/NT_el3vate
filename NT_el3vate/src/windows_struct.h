@@ -8,6 +8,7 @@
 // Those offsets are for Windows 10 21H2
 #define _EPROCESS_ImageFileName_offset 0x5a8
 #define _EPROCESS_UniqueProcessId_offset 0x440
+#define _EPROCESS_Token_offset 0x4b8
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_descriptor
 //slide modifications were made in comparison to msdn

