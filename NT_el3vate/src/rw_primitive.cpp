@@ -253,7 +253,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 					// check buf bounds
 					if ((unsigned __int64)buf <= (unsigned __int64)UniqueProcessId && (unsigned __int64)UniqueProcessId <= (unsigned __int64)buf)
 					{
-						if (*((unsigned __int64*)UniqueProcessId) == 0x4)
+						if (*((unsigned __int64*)UniqueProcessId) == pid)
 						{
 							void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
 							printf("[%d] Found EPROCESS base of System at: %p\n", patternCount, physicalEPROCESSBase);
@@ -285,7 +285,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 						UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
 
 						// TODO: Check physical address ranges 
-						if (*((unsigned __int64*)UniqueProcessId) == 0x4)
+						if (*((unsigned __int64*)UniqueProcessId) == pid)
 						{
 							// PID of System is 4
 							void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
