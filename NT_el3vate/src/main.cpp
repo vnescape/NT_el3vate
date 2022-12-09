@@ -60,11 +60,16 @@ int main(int argc, char** argv)
 	}
 
 	size_t EPROCESS_SYSTEM_size = EPROCESS_SYSTEM.size();
+	std::vector <unsigned __int64> EPROCESS_SYSTEM_page;
+	std::vector <unsigned __int64> EPROCESS_SYSTEM_page_offset;
 	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
 		printf("------------------------------------\nEPROCESS Base of System: %p\n", (void*)EPROCESS_SYSTEM[i]);
+		EPROCESS_SYSTEM_page.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
+		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
 	}
 
 	// print Token for each EPROCESS Base
+	
 
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
 	CloseHandle(device);
