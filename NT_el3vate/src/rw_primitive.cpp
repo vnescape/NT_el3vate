@@ -155,7 +155,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				return -1;
 			}
 			PVOID castedBuf = *buf;
-			int offset2 = 0;
+
 			// go through page byte by byte and search for pattern
 			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++)
 			{
