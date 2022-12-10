@@ -106,6 +106,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	int memRegionsCount = -1;
 	printf("[ ] Search for pattern: \"%s\"\n", pattern);
 
+	// First get the count of the memory regions
 	memRegionsCount = GetPhysicalMemoryLayout(NULL);
 	if (memRegionsCount == -1) {
 		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
@@ -116,6 +117,8 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 		fprintf(stderr, "[!] calloc() failed.\n");
 		return -1;
 	}
+
+	// Now store the memory regions into memRegion
 	memRegionsCount = GetPhysicalMemoryLayout(memRegion);
 	if (memRegionsCount == -1) {
 		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
