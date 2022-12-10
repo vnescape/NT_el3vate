@@ -246,11 +246,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 				return -1;
 			}
 			PVOID castedBuf = *buf;
-			int offset2 = 0;
 			// go through page byte by byte and search for pattern
 			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++) {
-
-				offset2++;
 
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
