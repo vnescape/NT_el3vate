@@ -4,5 +4,5 @@
 
 
 LPVOID EPROCESS_address(LPVOID ntoskernlBase);
-LPVOID ntoskernl_base(void);
+LPVOID GetNToskernlBase(void);
 int GetPhysicalMemoryLayout(MEMORY_REGION* regions);

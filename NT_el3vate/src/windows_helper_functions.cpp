@@ -16,7 +16,7 @@ LPVOID EPROCESS_address(LPVOID ntoskernlBase) {
 	return (LPVOID)EPROCESS_address;
 }
 
-LPVOID ntoskernl_base(void) {
+LPVOID GetNToskernlBase(void) {
 	PVOID nt_base = NULL;
 	ULONG systemInformationLength = 1024 * 1024;
 
