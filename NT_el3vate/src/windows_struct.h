@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <winternl.h>
+#include <tlhelp32.h>
 
 #define PHYSICAL_ADDRESS	LARGE_INTEGER
 #define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
