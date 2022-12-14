@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
 	if (device == INVALID_HANDLE_VALUE)
 	{
-		fprintf(stderr, "> Could not open device: 0x%X\n", GetLastError());
+		fprintf(stderr, "> Could not open device: 0x%lX\n", GetLastError());
 		return FALSE;
 	}
 	HANDLE hPhysicalMemory = (HANDLE)calloc(1, sizeof(HANDLE));
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, hPhysicalMemory, sizeof(hPhysicalMemory),
 		hPhysicalMemory, sizeof(hPhysicalMemory), &bytesReturned, (LPOVERLAPPED)NULL);
 	if (status == FALSE) {
-		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
+		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %lX\n", status);
 		return EXIT_FAILURE;
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
