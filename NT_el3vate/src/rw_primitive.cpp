@@ -169,7 +169,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				}
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
-				printf("UnmapPhysicalMemory failed\n");
+				printf("[!] UnmapPhysicalMemory failed\n");
 				return -1;
 			}
 		}
@@ -288,7 +288,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 			}
 			//memset(buf, 0, 0x1000); unnecessary
 			if (UnmapPhysicalMemory(buf) == FALSE) {
-				printf("UnmapPhysicalMemory failed\n");
+				printf("[!] UnmapPhysicalMemory failed\n");
 				return -1;
 			}
 		}
