@@ -300,3 +300,13 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 	free(buf);
 	return 0;
 }
+
+int readPhysical(unsigned __int64 address, const void* buf, size_t count)
+{
+
+}
+
+int writePhysical(unsigned __int64 address, const void* buf, size_t count)
+{
+
+}
