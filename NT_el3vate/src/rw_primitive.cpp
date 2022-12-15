@@ -71,7 +71,7 @@ int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory) {
 
 	if (device == INVALID_HANDLE_VALUE)
 	{
-		fprintf(stderr, "[!] Could not open device: 0x%X\n", GetLastError());
+		fprintf(stderr, "[!] Could not open device: 0x%lX\n", GetLastError());
 		CloseHandle(device);
 		return -1;
 	}
@@ -89,7 +89,7 @@ int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory) {
 		(LPOVERLAPPED)NULL);
 
 	if (status == FALSE) {
-		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %X\n", status);
+		fprintf(stderr, "[!] IOCTL_MapPhysicalMemoryToLinearSpace failed with %lX\n", status);
 		CloseHandle(device);
 		return -1;
 	}
