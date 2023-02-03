@@ -243,13 +243,17 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 		fflush(stdout);
 
 		// go through each page in memory region
-		for (unsigned __int64 page = start; page < end; page = page + MEMORY_MAPED_SIZE) {
-			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, MEMORY_MAPED_SIZE, buf) == FALSE) {
-				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
-				free(fourPages);
-				free(buf);
-				return -1;
+		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
+			if (page % MEMORY_MAPED_SIZE == 0) {
+				if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, MEMORY_MAPED_SIZE, buf) == FALSE) {
+					fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+					free(fourPages);
+					free(buf);
+					return -1;
+				}
+				printf("maped stuff\n");
 			}
+
 			PVOID castedBuf = *buf;
 			// go through page byte by byte and search for pattern
 			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++) {
@@ -267,7 +271,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 					PVOID castedFourPages = *fourPages;
 					// get middle of fourPages
 					castedFourPages = (unsigned char*)castedFourPages + 0x2000;
-
+					printf("found the thing\n");
 					// now castedFourPages and *buf point to the same memory
 					// add pattern offset
 					castedFourPages = (unsigned char*)castedFourPages + offset;
@@ -293,10 +297,13 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 				}
 				castedBuf = (unsigned char*)castedBuf + 1;
 			}
-			//memset(buf, 0, MEMORY_MAPED_SIZE); unnecessary
-			if (UnmapPhysicalMemory(buf) == FALSE) {
-				printf("[!] UnmapPhysicalMemory failed\n");
-				return -1;
+			if (page % MEMORY_MAPED_SIZE == 0x1000) {
+				//memset(buf, 0, MEMORY_MAPED_SIZE); unnecessary
+				if (UnmapPhysicalMemory(buf) == FALSE) {
+					printf("[!] UnmapPhysicalMemory failed\n");
+					return -1;
+				}
+				printf("unmaped stuff\n");
 			}
 		}
 	}
