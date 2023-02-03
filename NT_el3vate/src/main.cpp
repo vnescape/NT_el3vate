@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include <chrono>
 
 
 #include "rw_primitive.h"
@@ -22,11 +23,14 @@ void printBytes(void* ptr, int size)
 
 int main(int argc, char** argv)
 {
+	// measure execution time of program
+	auto start = std::chrono::high_resolution_clock::now();
+
 	HANDLE device = INVALID_HANDLE_VALUE;
 	NTSTATUS status = FALSE;
 
 	DWORD bytesReturned = 0;
-
+	
 	SetConsoleTitleA("NT_el3vate");
 
 	device = CreateFileW(L"\\\\.\\ucorew64", GENERIC_ALL, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM, 0);
@@ -129,9 +133,11 @@ int main(int argc, char** argv)
 		}
 	}
 	
-
 	free(buf);
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
 	CloseHandle(device);
+	auto stop = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
+	printf("Duration to execute the Program in seconds: %lld\n", duration.count());
 	return EXIT_SUCCESS;
 }
