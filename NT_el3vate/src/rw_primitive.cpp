@@ -244,6 +244,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 
 		// go through each page in memory region
 		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
+
+			// TODO check the if
 			if (page % MEMORY_MAPED_SIZE == 0) {
 				if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, MEMORY_MAPED_SIZE, buf) == FALSE) {
 					fprintf(stderr, "[!] MapPhysicalMemory failed\n");
