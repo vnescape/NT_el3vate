@@ -152,6 +152,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
 			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+				free(fourPages);
 				return -1;
 			}
 			PVOID castedBuf = *buf;
@@ -170,6 +171,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 			}
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("[!] UnmapPhysicalMemory failed\n");
+				free(fourPages);
 				return -1;
 			}
 		}
@@ -177,6 +179,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	printf("[+] Scanned through every physical memory region\n");
 
 	free(memRegion);
+	free(fourPages);
 	free(buf);
 	return 0;
 }
@@ -243,6 +246,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
 			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+				free(fourPages);
+				free(buf);
 				return -1;
 			}
 			PVOID castedBuf = *buf;
@@ -254,6 +259,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 					// Try mapping 4 pages so the struct can fit into the mapped region
 					if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
 						fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+						free(fourPages);
+						free(buf);
 						return -1;
 					}
 
