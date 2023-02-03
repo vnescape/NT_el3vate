@@ -224,8 +224,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 	*/
 	printf("\n[ ]Scanning through each physical memory region...\n");
 
-
-	PVOID* buf = (PVOID*)malloc(0x1000);
+	const unsigned __int64 MEMORY_MAPED_SIZE = 0x1000;
+	PVOID* buf = (PVOID*)malloc(MEMORY_MAPED_SIZE);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
@@ -243,8 +243,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 		fflush(stdout);
 
 		// go through each page in memory region
-		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
-			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
+		for (unsigned __int64 page = start; page < end; page = page + MEMORY_MAPED_SIZE) {
+			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, MEMORY_MAPED_SIZE, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 				free(fourPages);
 				free(buf);
@@ -293,7 +293,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 				}
 				castedBuf = (unsigned char*)castedBuf + 1;
 			}
-			//memset(buf, 0, 0x1000); unnecessary
+			//memset(buf, 0, MEMORY_MAPED_SIZE); unnecessary
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("[!] UnmapPhysicalMemory failed\n");
 				return -1;
