@@ -241,19 +241,19 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
 		printf("%p - %p\n", (void*)start, (void*)end);
 		fflush(stdout);
+		unsigned __int64 maped_size = 0; 
 
 		// go through each page in memory region
 		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
 
 			// TODO check the if
-			if (page % MEMORY_MAPED_SIZE == 0) {
+			if (maped_size % MEMORY_MAPED_SIZE == 0) {
 				if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, MEMORY_MAPED_SIZE, buf) == FALSE) {
 					fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 					free(fourPages);
 					free(buf);
 					return -1;
 				}
-				printf("maped stuff\n");
 			}
 
 			PVOID castedBuf = *buf;
@@ -273,7 +273,6 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 					PVOID castedFourPages = *fourPages;
 					// get middle of fourPages
 					castedFourPages = (unsigned char*)castedFourPages + 0x2000;
-					printf("found the thing\n");
 					// now castedFourPages and *buf point to the same memory
 					// add pattern offset
 					castedFourPages = (unsigned char*)castedFourPages + offset;
@@ -299,13 +298,13 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 				}
 				castedBuf = (unsigned char*)castedBuf + 1;
 			}
-			if (page % MEMORY_MAPED_SIZE == 0x1000) {
+			maped_size = maped_size + 0x1000;
+			if (maped_size % MEMORY_MAPED_SIZE == 0) {
 				//memset(buf, 0, MEMORY_MAPED_SIZE); unnecessary
 				if (UnmapPhysicalMemory(buf) == FALSE) {
 					printf("[!] UnmapPhysicalMemory failed\n");
 					return -1;
 				}
-				printf("unmaped stuff\n");
 			}
 		}
 	}
