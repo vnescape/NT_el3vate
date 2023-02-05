@@ -149,3 +149,35 @@ int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	free(lpData);
 	return regionCount;
 }
+
+int GetWindowsOffsets()
+{
+	using myNtRtlGetVersion = NTSTATUS(NTAPI*)(
+		PRTL_OSVERSIONINFOW lpVersionInformation
+		);
+	myNtRtlGetVersion fNtRtlGetVersion = (myNtRtlGetVersion)(GetProcAddress(GetModuleHandleA("ntdll"), "RtlGetVersion"));
+	RTL_OSVERSIONINFOW lpVersionInformation = { 0 };
+	lpVersionInformation.dwOSVersionInfoSize =sizeof(RTL_OSVERSIONINFOW);
+	NTSTATUS status = fNtRtlGetVersion(&lpVersionInformation);
+
+	if (status != 0) {
+		fprintf(stderr, "[!] fNtRtlGetVersion failed.\n");
+		return -1;
+	}
+	printf("WINDOWS VERSION: %d\n", lpVersionInformation.dwBuildNumber);
+	switch (lpVersionInformation.dwBuildNumber)
+	{
+	case 19045: 
+		// Those offsets are for Windows 10 21H2
+		_EPROCESS_ImageFileName_offset = 0x5a8;
+		_EPROCESS_UniqueProcessId_offset = 0x440;
+		_EPROCESS_Token_offset = 0x4b8;
+		break;
+	default:
+		fprintf(stderr, "[!] No windows offsets found for this windows version.\n");
+		return -1;
+		break;
+	}
+	printf("[+] Found Windows offset for build %d.\n", lpVersionInformation.dwBuildNumber);
+	return 0;
+}
