@@ -167,6 +167,11 @@ int GetWindowsOffsets()
 
 	switch (lpVersionInformation.dwBuildNumber)
 	{
+	case 22621:
+		// Those offsets are for Windows 11 22H2
+		_EPROCESS_ImageFileName_offset = 0x5a8;
+		_EPROCESS_UniqueProcessId_offset = 0x440;
+		_EPROCESS_Token_offset = 0x4b8;
 	case 19045: 
 		// Those offsets are for Windows 10 21H2
 		_EPROCESS_ImageFileName_offset = 0x5a8;
