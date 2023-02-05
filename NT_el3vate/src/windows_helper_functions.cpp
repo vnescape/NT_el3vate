@@ -164,7 +164,7 @@ int GetWindowsOffsets()
 		fprintf(stderr, "[!] fNtRtlGetVersion failed.\n");
 		return -1;
 	}
-	printf("WINDOWS VERSION: %d\n", lpVersionInformation.dwBuildNumber);
+
 	switch (lpVersionInformation.dwBuildNumber)
 	{
 	case 19045: 
