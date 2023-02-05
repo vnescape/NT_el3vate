@@ -7,9 +7,14 @@
 #include <vector>
 #include <chrono>
 
-
 #include "rw_primitive.h"
 #include "windows_helper_functions.h"
+
+
+// Those offsets are for Windows 10 21H2
+unsigned __int64 _EPROCESS_ImageFileName_offset = 0x5a8;
+unsigned __int64 _EPROCESS_UniqueProcessId_offset = 0x440;
+unsigned __int64 _EPROCESS_Token_offset = 0x4b8;
 
 
 void printBytes(void* ptr, int size)
