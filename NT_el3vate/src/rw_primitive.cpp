@@ -358,8 +358,6 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 		for (int i = 0; i < numThreads; i++) {
 			locations.insert(locations.end(), accLocations[i].begin(), accLocations[i].end());
 		}
-		printf("haben wir was gefunden?");
-		fflush(stdout);
 	}
 	printf("[+] Scanned through every physical memory region\n");
 
