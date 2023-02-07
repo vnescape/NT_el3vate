@@ -216,7 +216,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	unsigned __int64 maped_size = 0;
 	unsigned __int64 offset_into_mapped_area = 0;
 	// go through each page in memory region
-	for (unsigned __int64 page = start; page < end; page += (numThreads * 0x1000))
+	for (unsigned __int64 page = start; page < end; page += (unsigned __int64(numThreads) * 0x1000))
 	{
 		if (maped_size % MEMORY_MAPED_SIZE == 0) {
 			offset_into_mapped_area = 0;
@@ -299,7 +299,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 
 unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDLE hPhysicalMemory, std::vector<unsigned __int64>& locations) {
 
-	const unsigned int numThreads = 1; // needs to be global for easy access 
+	const unsigned int numThreads = 8; // needs to be global for easy access 
 
 	int memRegionsCount = -1;
 
