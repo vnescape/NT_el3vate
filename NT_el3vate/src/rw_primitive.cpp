@@ -341,10 +341,9 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 		// Start threads
 		for (int threadNumber = 0; threadNumber < numThreads; threadNumber++)
 		{
-			std::vector<unsigned __int64> partialLocations = accLocations[threadNumber];
 			threads.push_back(std::thread(
 				GoThroughPages, processName, pid,
-				hPhysicalMemory, numThreads, std::ref(partialLocations),
+				hPhysicalMemory, numThreads, std::ref(accLocations[threadNumber]),
 				start + (threadNumber * 0x1000), end));
 		}
 		// Join threads
@@ -359,7 +358,8 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 		for (int i = 0; i < numThreads; i++) {
 			locations.insert(locations.end(), accLocations[i].begin(), accLocations[i].end());
 		}
-		
+		printf("haben wir was gefunden?");
+		fflush(stdout);
 	}
 	printf("[+] Scanned through every physical memory region\n");
 
