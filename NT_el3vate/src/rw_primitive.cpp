@@ -184,14 +184,6 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	return 0;
 }
 
-// Source: https://stackoverflow.com/questions/38874605/generic-method-for-flattening-2d-vectors
-template<typename T> std::vector<T> flatten(const std::vector<std::vector<T>>& orig)
-{
-	std::vector<T> ret;
-	for (const auto& v : orig)
-		ret.insert(ret.end(), v.begin(), v.end());
-	return ret;
-}
 
 void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	const unsigned int numThreads, std::vector<unsigned __int64>& locations, unsigned __int64 start, unsigned __int64 end)
@@ -345,14 +337,15 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 		
 		// Multithreading
 		std::vector<std::thread> threads;
-		std::vector<std::vector<unsigned __int64>> accLocations(numThreads);
+		std::vector<unsigned __int64> accLocations[numThreads];
 
 		// Start threads
 		for (int threadNumber = 0; threadNumber < numThreads; threadNumber++)
 		{
+			std::vector<unsigned __int64> partialLocations = accLocations[i];
 			threads.push_back(std::thread(
 				GoThroughPages, processName, pid,
-				hPhysicalMemory, numThreads, std::ref(accLocations[i]),
+				hPhysicalMemory, numThreads, std::ref(partialLocations),
 				start + (threadNumber * 0x1000), end));
 		}
 		// Join threads
@@ -363,8 +356,10 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 				// TODO: error handling
 			}
 		}
-		std::vector<unsigned __int64> flatAccLocations = flatten(accLocations);
-		locations.insert(locations.end(), flatAccLocations.begin(), flatAccLocations.end());
+		for (int i = 0; i < numThreads; i++) {
+			locations.insert(locations.end(), accLocations[i].begin(), accLocations[i].end());
+		}
+		
 	}
 	printf("[+] Scanned through every physical memory region\n");
 
