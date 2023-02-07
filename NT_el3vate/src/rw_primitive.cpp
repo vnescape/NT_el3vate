@@ -216,7 +216,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	unsigned __int64 maped_size = 0;
 	unsigned __int64 offset_into_mapped_area = 0;
 	// go through each page in memory region
-	for (unsigned __int64 page = start; page < end; page += page + (numThreads * 0x1000))
+	for (unsigned __int64 page = start; page < end; page += (numThreads * 0x1000))
 	{
 		if (maped_size % MEMORY_MAPED_SIZE == 0) {
 			offset_into_mapped_area = 0;
@@ -238,7 +238,6 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 		// go through page byte by byte and search for pattern
 		for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++)
 		{
-
 			if (memcmp(castedBuf, pattern, patternLength) == 0)
 			{
 				// Try mapping 4 pages so the struct can fit into the mapped region
@@ -342,7 +341,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 		// Start threads
 		for (int threadNumber = 0; threadNumber < numThreads; threadNumber++)
 		{
-			std::vector<unsigned __int64> partialLocations = accLocations[i];
+			std::vector<unsigned __int64> partialLocations = accLocations[threadNumber];
 			threads.push_back(std::thread(
 				GoThroughPages, processName, pid,
 				hPhysicalMemory, numThreads, std::ref(partialLocations),
@@ -356,6 +355,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 				// TODO: error handling
 			}
 		}
+
 		for (int i = 0; i < numThreads; i++) {
 			locations.insert(locations.end(), accLocations[i].begin(), accLocations[i].end());
 		}
