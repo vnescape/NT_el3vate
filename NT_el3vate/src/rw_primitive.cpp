@@ -186,6 +186,8 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 
 unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
 
+	unsigned int numThreads = 1;
+
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
 	unsigned char pattern[16] = { 0 };
@@ -244,7 +246,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 		unsigned __int64 maped_size = 0; 
 		unsigned __int64 offset_into_mapped_area = 0;
 		// go through each page in memory region
-		for (unsigned __int64 page = start; page < end; page = page + 0x1000)
+		for (unsigned __int64 page = start; page < end; page = page + (numThreads * 0x1000))
 		{
 			if (maped_size % MEMORY_MAPED_SIZE == 0) {
 				offset_into_mapped_area = 0;
