@@ -1,6 +1,6 @@
 #include "rw_primitive.h"
 #include "windows_helper_functions.h"
-#include <vector>
+
 
 using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	HANDLE SectionHandle,
@@ -184,6 +184,15 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	return 0;
 }
 
+// Source: https://stackoverflow.com/questions/38874605/generic-method-for-flattening-2d-vectors
+template<typename T> std::vector<T> flatten(const std::vector<std::vector<T>>& orig)
+{
+	std::vector<T> ret;
+	for (const auto& v : orig)
+		ret.insert(ret.end(), v.begin(), v.end());
+	return ret;
+}
+
 void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	const unsigned int numThreads, std::vector<unsigned __int64>& locations, unsigned __int64 start, unsigned __int64 end)
 {
@@ -227,7 +236,8 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 				free(fourPages);
 				free(buf);
-				return -1;
+				//return -1; TODO: Error handling
+				return;
 			}
 			//printf("Maped %p - %p\n", page, page + MEMORY_MAPED_SIZE);
 		}
@@ -244,7 +254,8 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 					fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 					free(fourPages);
 					free(buf);
-					return -1;
+					//return -1; TODO: Error handling
+					return;
 				}
 
 				PVOID castedFourPages = *fourPages;
@@ -270,7 +281,8 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 				//memset(fourPages, 0, 0x4000); unnecessary
 				if (UnmapPhysicalMemory(fourPages) == FALSE) {
 					printf("[!] UnmapPhysicalMemory failed\n");
-					return -1;
+					//return -1; TODO: Error handling
+					return;
 				}
 			}
 			castedBuf = (unsigned char*)castedBuf + 1;
@@ -283,7 +295,8 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 			//memset(buf, 0, MEMORY_MAPED_SIZE); unnecessary
 			if (UnmapPhysicalMemory(buf) == FALSE) {
 				printf("[!] UnmapPhysicalMemory failed\n");
-				return -1;
+				//return -1; TODO: Error handling
+				return;
 			}
 			//printf("Unmap at page: %p\n", page);
 		}
@@ -295,7 +308,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 
 unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDLE hPhysicalMemory, std::vector<unsigned __int64>& locations) {
 
-	unsigned int numThreads = 1;
+	const unsigned int numThreads = 1; // needs to be global for easy access 
 
 	int memRegionsCount = -1;
 
@@ -330,6 +343,28 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 		printf("%p - %p\n", (void*)start, (void*)end);
 		fflush(stdout);
 		
+		// Multithreading
+		std::vector<std::thread> threads;
+		std::vector<std::vector<unsigned __int64>> accLocations(numThreads);
+
+		// Start threads
+		for (int threadNumber = 0; threadNumber < numThreads; threadNumber++)
+		{
+			threads.push_back(std::thread(
+				GoThroughPages, processName, pid,
+				hPhysicalMemory, numThreads, std::ref(accLocations[i]),
+				start + (threadNumber * 0x1000), end));
+		}
+		// Join threads
+		for (std::thread& t : threads)
+		{
+			if (t.joinable()) {
+				t.join();
+				// TODO: error handling
+			}
+		}
+		std::vector<unsigned __int64> flatAccLocations = flatten(accLocations);
+		locations.insert(locations.end(), flatAccLocations.begin(), flatAccLocations.end());
 	}
 	printf("[+] Scanned through every physical memory region\n");
 
