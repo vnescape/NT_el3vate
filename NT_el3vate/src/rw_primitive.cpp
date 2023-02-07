@@ -216,7 +216,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	unsigned __int64 maped_size = 0;
 	unsigned __int64 offset_into_mapped_area = 0;
 	// go through each page in memory region
-	for (unsigned __int64 page = start; page < end; page += (unsigned __int64(numThreads) * 0x1000))
+	for (unsigned __int64 page = start; page < end; page += (static_cast<unsigned long long>(numThreads) * 0x1000))
 	{
 		if (maped_size % MEMORY_MAPED_SIZE == 0) {
 			offset_into_mapped_area = 0;
