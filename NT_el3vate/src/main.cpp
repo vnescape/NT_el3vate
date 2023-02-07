@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
-	size_t EPROCESS_cmd_size = EPROCESS_cmd.size();
+	size_t EPROCESS_cmd_size = EPROCESS_cmd.size(); // ERROR: EPROCESS_cmd_size seam to get optimised away in release mode
 	std::vector <unsigned __int64> EPROCESS_cmd_page;
 	std::vector <unsigned __int64> EPROCESS_cmd_page_offset;
 	for (int i = 0; i < EPROCESS_cmd_size; i++) {
