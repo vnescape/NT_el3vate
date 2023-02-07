@@ -183,6 +183,6 @@ int GetWindowsOffsets()
 		return -1;
 		break;
 	}
-	printf("[+] Found Windows offset for build %d.\n", lpVersionInformation.dwBuildNumber);
+	printf("[+] Found Windows offset for build %lu.\n", lpVersionInformation.dwBuildNumber);
 	return 0;
 }
