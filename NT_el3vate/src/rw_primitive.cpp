@@ -188,6 +188,8 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	const unsigned int numThreads, std::vector<unsigned __int64>& locations, unsigned __int64 start, unsigned __int64 end)
 {
+	locations.push_back(2);
+	return;
 	unsigned int patternLength = 16;
 	unsigned int patternCount = 0;
 
@@ -299,7 +301,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 
 unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDLE hPhysicalMemory, std::vector<unsigned __int64>& locations) {
 
-	const unsigned int numThreads = 2; // needs to be global for easy access 
+	const unsigned int numThreads = 1; // needs to be global for easy access 
 
 	int memRegionsCount = -1;
 
