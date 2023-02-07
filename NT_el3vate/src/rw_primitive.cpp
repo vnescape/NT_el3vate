@@ -299,7 +299,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 
 unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDLE hPhysicalMemory, std::vector<unsigned __int64>& locations) {
 
-	const unsigned int numThreads = 8; // needs to be global for easy access 
+	const unsigned int numThreads = 2; // needs to be global for easy access 
 
 	int memRegionsCount = -1;
 
