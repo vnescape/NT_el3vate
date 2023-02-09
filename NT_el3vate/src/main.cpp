@@ -32,6 +32,7 @@ int main(int argc, char** argv)
 	auto start = std::chrono::high_resolution_clock::now();
 	if (GetWindowsOffsets() == -1) {
 		fprintf(stderr, "[!] GetWindowsOffsets() failed\n");
+		exit(EXIT_FAILURE);
 	}
 
 	HANDLE device = INVALID_HANDLE_VALUE;
