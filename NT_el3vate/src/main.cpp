@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
 	if (GetWindowsOffsets() == -1) {
-		fprintf(stderr, "[!] GetWindowsOffsets() failed");
+		fprintf(stderr, "[!] GetWindowsOffsets() failed\n");
 	}
 
 	HANDLE device = INVALID_HANDLE_VALUE;
