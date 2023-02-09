@@ -338,7 +338,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid, HANDL
 		
 		// Multithreading
 		std::vector<std::thread> threads(0);
-		std::vector<unsigned __int64> accLocations[numThreads]; // TODO: needs to be initalized!
+		std::vector<unsigned __int64> accLocations[numThreads] = { std::vector<unsigned __int64>(0) };
 
 		// Start threads
 		for (int threadNumber = 0; threadNumber < numThreads; threadNumber++)
