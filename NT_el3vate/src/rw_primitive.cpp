@@ -210,7 +210,8 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
-	PVOID* fourPages = (PVOID*)malloc(0x4000);
+	unsigned int fourPagesSize = 0x4000;
+	PVOID* fourPages = (PVOID*)malloc(fourPagesSize);
 	if (fourPages == 0) {
 		exit(EXIT_FAILURE);
 	}
@@ -243,7 +244,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 			if (memcmp(castedBuf, pattern, patternLength) == 0)
 			{
 				// Try mapping 4 pages so the struct can fit into the mapped region
-				if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
+				if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, fourPagesSize, fourPages) == FALSE) {
 					fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 					free(fourPages);
 					free(buf);

