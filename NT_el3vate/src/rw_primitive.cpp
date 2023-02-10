@@ -131,7 +131,8 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	}
 	printf("\n[ ]Scanning through each physical memory region...\n");
 
-	PVOID* buf = (PVOID*)malloc(0x1000);
+	unsigned int bufSize = 0x1000;
+	PVOID* buf = (PVOID*)malloc(bufSize);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
@@ -146,7 +147,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 
 		// go through each page in memory region
 		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
-			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
+			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, bufSize, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 				return -1;
 			}
