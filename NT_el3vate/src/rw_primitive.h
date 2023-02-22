@@ -1,10 +1,8 @@
 #pragma once
 #include <vector>
-#include <thread>
 #include <Windows.h>
 #include <winternl.h>
 #include <stdio.h>
-
 #include "windows_helper_functions.h"
 
 #define PHYSICAL_ADDRESS	LARGE_INTEGER

