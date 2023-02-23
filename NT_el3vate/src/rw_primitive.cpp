@@ -133,7 +133,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	for (int i = 0; i < memRegionsCount; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
 	}
-	printf("\n[ ]Scanning through each physical memory region...\n");
+	printf("[ ]Scanning through each physical memory region...\n");
 
 	PVOID* buf = (PVOID*)malloc(0x1000);
 	if (buf == 0) {
