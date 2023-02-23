@@ -118,7 +118,7 @@ typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
         } Connection;
     } u;
 } CM_PARTIAL_RESOURCE_DESCRIPTOR, * PCM_PARTIAL_RESOURCE_DESCRIPTOR;
-#pragma pack(pop)
+#pragma pack(pop,4)
 
 
 //Source: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_list
