@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	printf("----------------------------------------------- now for cmd.exe\n");
+	printf("----------------------------------------------- now for %s\n", targetProcess);
 
 	std::vector <unsigned __int64> EPROCESS_cmd;
 
