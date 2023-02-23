@@ -222,12 +222,12 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 		return -1;
 	}
 
-	printf("[+] Physical memory regions\n");
-	/*
+	printf("[+] Found %d physical memory regions\n", memRegionsCount);
+	
 	for (int i = 0; i < memRegionsCount; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
 	}
-	*/
+	
 	printf("\n[ ]Scanning through each physical memory region...\n");
 
 	const unsigned __int64 MEMORY_MAPED_SIZE = (unsigned __int64)0x1000 * 100;
