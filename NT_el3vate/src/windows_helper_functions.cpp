@@ -89,6 +89,7 @@ LPVOID GetNToskernlBase(void) {
 // the function will return the required count of MEMORY_REGION struct,
 // this can be used to determine the required amount of MEMORY_REGION
 // -1 will be returned on error
+// TODO: Does not work for higher RAM ammounts > 4GB
 int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	HKEY hKey = NULL;
 	LPCWSTR subKey = L"HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory";
