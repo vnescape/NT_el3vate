@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 
 	std::vector <unsigned __int64> EPROCESS_cmd;
 
-	if (GetEPROCESSPhysicalBase("cmd.exe", GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd) == -1)
+	if (GetEPROCESSPhysicalBase("NT_el3vate.exe", GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd) == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
