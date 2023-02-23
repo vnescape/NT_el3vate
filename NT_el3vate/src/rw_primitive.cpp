@@ -129,7 +129,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 		return -1;
 	}
 
-	printf("[+] Physical memory regions\n");
+	printf("[+] Found %d physical memory regions\n", memRegionsCount);
 	for (int i = 0; i < memRegionsCount; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
 	}
