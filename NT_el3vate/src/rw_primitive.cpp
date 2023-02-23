@@ -124,6 +124,10 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
 		return -1;
 	}
+	if (memRegionsCount == 0) {
+		fprintf(stderr, "[!] Found 0 memory regions.\n");
+		return -1;
+	}
 
 	printf("[+] Physical memory regions\n");
 	for (int i = 0; i < memRegionsCount; i++) {
