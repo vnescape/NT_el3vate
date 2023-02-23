@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <tlhelp32.h>
+#include <stdint.h>
 
 #define PHYSICAL_ADDRESS	LARGE_INTEGER
 #define SystemModuleInformation (SYSTEM_INFORMATION_CLASS)0x0B
@@ -17,6 +18,34 @@ typedef LARGE_INTEGER PHYSICAL_ADDRESS, * PPHYSICAL_ADDRESS;
 extern unsigned __int64 _EPROCESS_ImageFileName_offset;
 extern unsigned __int64 _EPROCESS_UniqueProcessId_offset;
 extern unsigned __int64 _EPROCESS_Token_offset;
+
+// Source: https://git.back.engineering/_xeroxz/VDM/src/branch/master/VDM/util/util.hpp
+#pragma pack (push, 1)
+struct PhysicalMemoryPage//CM_PARTIAL_RESOURCE_DESCRIPTOR
+{
+    uint8_t type;
+    uint8_t shareDisposition;
+    uint16_t flags;
+    uint64_t pBegin;
+    uint32_t sizeButNotExactly;
+    uint32_t pad;
+    static constexpr uint16_t cm_resource_memory_large_40{ 0x200 };
+    static constexpr uint16_t cm_resource_memory_large_48{ 0x400 };
+    static constexpr uint16_t cm_resource_memory_large_64{ 0x800 };
+    uint64_t size()const noexcept
+    {
+        if (flags & cm_resource_memory_large_40)
+            return uint64_t{ sizeButNotExactly } << 8;
+        else if (flags & cm_resource_memory_large_48)
+            return uint64_t{ sizeButNotExactly } << 16;
+        else if (flags & cm_resource_memory_large_64)
+            return uint64_t{ sizeButNotExactly } << 32;
+        else
+            return uint64_t{ sizeButNotExactly };
+    }
+};
+static_assert(sizeof(PhysicalMemoryPage) == 20);
+#pragma pack (pop)
 
 #pragma pack(push,4)
 typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {

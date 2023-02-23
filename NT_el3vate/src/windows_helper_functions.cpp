@@ -132,18 +132,16 @@ int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	{
 		for (DWORD j = 0; j < resource_list->List[0].PartialResourceList.Count; j++)
 		{
-			if (resource_list->List[i].PartialResourceList.PartialDescriptors[j].Type == 3)
+			//physical_memory_layout_info->pmi[j].u.Memory.Start.QuadPart
+			address = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Start.QuadPart;
+			size = ((PhysicalMemoryPage*)&resource_list->List[i].PartialResourceList.PartialDescriptors[j])->size();
+			if (regions != NULL)
 			{
-				address = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Start.QuadPart;
-				size = resource_list->List[i].PartialResourceList.PartialDescriptors[j].u.Memory.Length;
-				if (regions != NULL)
-				{
-					regions->address = address;
-					regions->size = size;
-					regions++;
-				}
-				regionCount++;
+				regions->address = address;
+				regions->size = size;
+				regions++;
 			}
+			regionCount++;
 		}
 	}
 
