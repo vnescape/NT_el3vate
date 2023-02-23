@@ -227,10 +227,11 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 	if (memRegionsCount <= 3) {
 		fprintf(stderr, "[!] Failed to get enough memory regions\n");
 	}
-	
+	/*
 	for (int i = 0; i < memRegionsCount; i++) {
 		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
 	}
+	*/
 	
 	printf("\n[ ]Scanning through each physical memory region...\n");
 
