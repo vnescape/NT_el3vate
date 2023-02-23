@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 	std::vector <unsigned __int64> EPROCESS_SYSTEM_page;
 	std::vector <unsigned __int64> EPROCESS_SYSTEM_page_offset;
 	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
-		EPROCESS_SYSTEM_page.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF));
+		EPROCESS_SYSTEM_page.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF)); // Sometimes crashes here FreeHeap()
 		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
