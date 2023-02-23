@@ -233,7 +233,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 	}
 	*/
 	
-	printf("\n[ ]Scanning through each physical memory region...\n");
+	printf("[ ] Scanning through each physical memory region...\n");
 
 	const unsigned __int64 MEMORY_MAPED_SIZE = (unsigned __int64)0x1000 * 100;
 	PVOID* buf = (PVOID*)malloc(MEMORY_MAPED_SIZE);
@@ -261,7 +261,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 				offset_into_mapped_area = 0;
 				int correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE;
 				if (page + MEMORY_MAPED_SIZE > end) {
-					correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE - (unsigned __int64)(page + MEMORY_MAPED_SIZE - end);
+					correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE - (unsinged __int64)(page + MEMORY_MAPED_SIZE - end);
 				}
 				if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, correct_MEMORY_MAPED_SIZE, buf) == FALSE) {
 					fprintf(stderr, "[!] MapPhysicalMemory failed\n");
