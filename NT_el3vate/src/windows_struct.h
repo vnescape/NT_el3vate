@@ -44,7 +44,7 @@ struct PhysicalMemoryPage//CM_PARTIAL_RESOURCE_DESCRIPTOR
             return uint64_t{ sizeButNotExactly };
     }
 };
-static_assert(sizeof(PhysicalMemoryPage) == 20);
+static_assert(sizeof(PhysicalMemoryPage) == 20, "PhysicalMemoryPage size is wrong\n");
 #pragma pack (pop)
 
 #pragma pack(push,4)
