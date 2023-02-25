@@ -306,7 +306,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 					}
 
 					//memset(fourPages, 0, 0x4000); unnecessary
-					if (UnmapPhysicalMemory(fourPages) == FALSE) { // Sometimes crashes here... FreeHeap()
+					if (UnmapPhysicalMemory(fourPages) == FALSE) {
 						printf("[!] UnmapPhysicalMemory failed\n");
 						return -1;
 					}
