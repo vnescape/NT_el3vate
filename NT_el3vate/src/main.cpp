@@ -118,13 +118,13 @@ int main(int argc, char** argv)
 	size_t EPROCESS_cmd_size = EPROCESS_cmd.size();
 	std::vector <unsigned __int64> EPROCESS_cmd_page;
 	std::vector <unsigned __int64> EPROCESS_cmd_page_offset;
-	for (int i = 0; i < EPROCESS_cmd_size; i++) {
+	for (size_t i = 0; i < EPROCESS_cmd_size; i++) {
 		EPROCESS_cmd_page.push_back(EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF));
 		EPROCESS_cmd_page_offset.push_back(EPROCESS_cmd[i] & (unsigned __int64)-1 & 0xFFF);
 	}
 
 
-	for (int i = 0; i < EPROCESS_cmd_size; i++) {
+	for (size_t i = 0; i < EPROCESS_cmd_size; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_cmd_page[i], 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
