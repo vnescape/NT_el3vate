@@ -3,7 +3,7 @@
 #include <vector>
 #include <thread>
 
-#define numThreads 4
+#define numThreads 1
 
 using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	HANDLE SectionHandle,
@@ -123,7 +123,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 		pattern[i] = processName[i];
 	}
 
-	const unsigned __int64 MEMORY_MAPED_SIZE = (unsigned __int64)0x1000;
+	const unsigned __int64 MEMORY_MAPED_SIZE = 0x1000;
 	PVOID* buf = (PVOID*)malloc(MEMORY_MAPED_SIZE);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
@@ -141,10 +141,10 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 		if (maped_size % MEMORY_MAPED_SIZE == 0) {
 			offset_into_mapped_area = 0;
 			unsigned __int64 correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE;
-			if (page + MEMORY_MAPED_SIZE > end) {
+			if ((page + MEMORY_MAPED_SIZE) > end) {
 				correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE - (page + MEMORY_MAPED_SIZE - end);
 			}
-			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, correct_MEMORY_MAPED_SIZE, buf) == FALSE) {
+			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, MEMORY_MAPED_SIZE, buf) == FALSE) {
 				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 				free(fourPages);
 				free(buf);
