@@ -190,7 +190,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 }
 
 void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
-	const unsigned int numThreads, std::vector<unsigned __int64>& locations, unsigned __int64 start, unsigned __int64 end)
+	const unsigned __int64 threadID, std::vector<unsigned __int64>& locations, unsigned __int64 start, unsigned __int64 end)
 {
 	unsigned int patternLength = 16;
 	unsigned int patternCount = 0;
@@ -220,7 +220,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	unsigned __int64 maped_size = 0;
 	unsigned __int64 offset_into_mapped_area = 0;
 	// go through each page in memory region
-	for (unsigned __int64 page = start; page < end; page += 0x1000)
+	for (unsigned __int64 page = start; page < end; page += (threadID * 0x1000))
 	{
 		if (maped_size % MEMORY_MAPED_SIZE == 0) {
 			offset_into_mapped_area = 0;
@@ -301,7 +301,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	free(buf);
 }
 
-#define numThreads 4
+#define numThreads 8
 unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
 
 	int memRegionsCount = -1;
@@ -368,12 +368,12 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDL
 		std::vector<unsigned __int64> accLocations[numThreads];
 
 		// Start threads
-		for (int threadNumber = 0; threadNumber < numThreads; threadNumber++)
+		for (int threadID = 0; threadID < numThreads; threadID++)
 		{
 			threads.push_back(std::thread(
 				GoThroughPages, processName, pid,
-				hPhysicalMemory, numThreads, std::ref(accLocations[threadNumber]),
-				start + (threadNumber * 0x1000), end));
+				hPhysicalMemory, threadID, std::ref(accLocations[threadID]),
+				start + (threadID * 0x1000), end));
 		}
 		// Join threads
 		for (std::thread& t : threads)
