@@ -3,7 +3,7 @@
 #include <vector>
 #include <thread>
 
-#define numThreads 1
+#define numThreads 8
 
 using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	HANDLE SectionHandle,
