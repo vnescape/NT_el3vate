@@ -24,6 +24,7 @@ typedef struct Phys32Struct
 BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PVOID* VirtualAddress);
 BOOLEAN UnmapPhysicalMemory(PVOID* buffer);
 int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory);
+int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations);
 unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations);
 int readPhysical(unsigned __int64 address, const void* buf, size_t count);
 int writePhysical(unsigned __int64 address, const void* buf, size_t count);

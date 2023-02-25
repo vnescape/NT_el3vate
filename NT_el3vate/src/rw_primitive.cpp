@@ -3,7 +3,7 @@
 #include <vector>
 #include <thread>
 
-#define numThreads 8
+#define numThreads 4
 
 using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	HANDLE SectionHandle,
@@ -105,6 +105,91 @@ int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory) {
 	return 0;
 }
 
+int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
+	int memRegionsCount = -1;
+	printf("[ ] Search for pattern: \"%s\"\n", pattern);
+
+	// First get the count of the memory regions
+	memRegionsCount = GetPhysicalMemoryLayout(NULL);
+	if (memRegionsCount == -1) {
+		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
+		return -1;
+	}
+	MEMORY_REGION* memRegion = (MEMORY_REGION*)calloc(memRegionsCount, sizeof(MEMORY_REGION));
+	if (memRegion == NULL) {
+		fprintf(stderr, "[!] calloc() failed.\n");
+		return -1;
+	}
+
+	// Now store the memory regions into memRegion
+	memRegionsCount = GetPhysicalMemoryLayout(memRegion);
+	if (memRegionsCount == -1) {
+		fprintf(stderr, "[!] GetPhysicalMemoryLayout() failed.\n");
+		return -1;
+	}
+	if (memRegionsCount == 0) {
+		fprintf(stderr, "[!] Found 0 memory regions.\n");
+		return -1;
+	}
+
+	printf("[+] Found %d physical memory regions\n", memRegionsCount);
+	for (int i = 0; i < memRegionsCount; i++) {
+		printf("%p - %p\n", (void*)memRegion[i].address, (void*)(memRegion[i].address + memRegion[i].size));
+	}
+	printf("[ ]Scanning through each physical memory region...\n");
+
+	PVOID* buf = (PVOID*)malloc(0x1000);
+	if (buf == 0) {
+		exit(EXIT_FAILURE);
+	}
+
+	PVOID* fourPages = (PVOID*)malloc(0x4000);
+	if (fourPages == 0) {
+		exit(EXIT_FAILURE);
+	}
+	unsigned int patternCount = 0;
+	// go through mapped physical memory regions
+	for (int i = 0; i < memRegionsCount; i++) {
+		unsigned __int64 start = memRegion[i].address;
+		unsigned __int64 end = memRegion[i].address + memRegion[i].size;
+		printf("%p - %p\n", (void*)start, (void*)end);
+		fflush(stdout);
+
+		// go through each page in memory region
+		for (unsigned __int64 page = start; page < end; page = page + 0x1000) {
+			if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, 0x1000, buf) == FALSE) {
+				fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+				free(fourPages);
+				return -1;
+			}
+			PVOID castedBuf = *buf;
+
+			// go through page byte by byte and search for pattern
+			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++)
+			{
+				castedBuf = (unsigned char*)castedBuf + 1;
+				if (memcmp(castedBuf, pattern, patternLength) == 0)
+				{
+					unsigned __int64 patternLocation = page + offset;
+					locations.push_back(patternLocation);
+					printf("[%d] Found pattern at: %p\n", patternCount, (void*)(page + offset));
+					patternCount++;
+				}
+			}
+			if (UnmapPhysicalMemory(buf) == FALSE) {
+				printf("[!] UnmapPhysicalMemory failed\n");
+				free(fourPages);
+				return -1;
+			}
+		}
+	}
+	printf("[+] Scanned through every physical memory region\n");
+
+	free(memRegion);
+	free(fourPages);
+	free(buf);
+	return 0;
+}
 
 void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	const unsigned __int64 threadID, std::vector<unsigned __int64>& locations, unsigned __int64 start, unsigned __int64 end)
@@ -263,7 +348,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDL
 
 	printf("[ ] Scanning through each physical memory region...\n");
 
-	const unsigned __int64 MEMORY_MAPED_SIZE = (unsigned __int64)0x1000;
+	const unsigned __int64 MEMORY_MAPED_SIZE = (unsigned __int64)0x1000 * 100;
 	PVOID* buf = (PVOID*)malloc(MEMORY_MAPED_SIZE);
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
