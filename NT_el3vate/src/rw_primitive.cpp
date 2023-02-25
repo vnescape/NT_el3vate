@@ -1,5 +1,7 @@
 #include "rw_primitive.h"
 #include "windows_helper_functions.h"
+
+#include <omp.h>
 #include <vector>
 
 using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
@@ -253,79 +255,90 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 		unsigned __int64 maped_size = 0; 
 		unsigned __int64 offset_into_mapped_area = 0;
 		// go through each page in memory region
-		for (unsigned __int64 page = start; page < end; page = page + 0x1000)
+
+		#define THREADS 4
+		std::vector <unsigned __int64> tLocations[THREADS];
+		omp_set_num_threads(THREADS);
+		#pragma	omp parallel
 		{
-			if (maped_size % MEMORY_MAPED_SIZE == 0) {
-				offset_into_mapped_area = 0;
-				unsigned __int64 correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE;
-				if (page + MEMORY_MAPED_SIZE > end) {
-					correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE - (page + MEMORY_MAPED_SIZE - end);
-				}
-				if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, correct_MEMORY_MAPED_SIZE, buf) == FALSE) {
-					fprintf(stderr, "[!] MapPhysicalMemory failed\n");
-					free(fourPages);
-					free(buf);
-					return -1;
-				}
-				//printf("Maped %p - %p\n", page, page + MEMORY_MAPED_SIZE);
-			}
-			PVOID castedBuf = *buf;
-			castedBuf = (char*)castedBuf + offset_into_mapped_area;
-			// go through page byte by byte and search for pattern
-			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++)
+			#pragma omp for
+			for (unsigned __int64 page = start; page < end; page = page + 0x1000)
 			{
-				
-				if (memcmp(castedBuf, pattern, patternLength) == 0)
-				{
-					// Try mapping 4 pages so the struct can fit into the mapped region
-					if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
+				if (maped_size % MEMORY_MAPED_SIZE == 0) {
+					offset_into_mapped_area = 0;
+					unsigned __int64 correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE;
+					if (page + MEMORY_MAPED_SIZE > end) {
+						correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE - (page + MEMORY_MAPED_SIZE - end);
+					}
+					if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page, correct_MEMORY_MAPED_SIZE, buf) == FALSE) {
 						fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 						free(fourPages);
 						free(buf);
 						return -1;
 					}
+					//printf("Maped %p - %p\n", page, page + MEMORY_MAPED_SIZE);
+				}
+				PVOID castedBuf = *buf;
+				castedBuf = (char*)castedBuf + offset_into_mapped_area;
+				// go through page byte by byte and search for pattern
+				for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++)
+				{
 
-					PVOID castedFourPages = *fourPages;
-					// get middle of fourPages
-					castedFourPages = (unsigned char*)castedFourPages + 0x2000;
-					// now castedFourPages and *buf point to the same memory
-					// add pattern offset
-					castedFourPages = (unsigned char*)castedFourPages + offset;
-
-					unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
-					unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
-					unsigned char* Token = EPROCESSBaseOfSystem + _EPROCESS_Token_offset;
-					// TODO: Check physical address ranges
-					// Token check might not work as intended
-					if (*(unsigned __int64*)UniqueProcessId == pid && *(unsigned __int64*)Token != 0)
+					if (memcmp(castedBuf, pattern, patternLength) == 0)
 					{
-						void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
-						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", patternCount, processName, physicalEPROCESSBase);
-						patternCount++;
-						locations.push_back((unsigned __int64)physicalEPROCESSBase);
-					}
+						// Try mapping 4 pages so the struct can fit into the mapped region
+						if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, page - 0x2000, 0x4000, fourPages) == FALSE) {
+							fprintf(stderr, "[!] MapPhysicalMemory failed\n");
+							free(fourPages);
+							free(buf);
+							return -1;
+						}
 
-					//memset(fourPages, 0, 0x4000); unnecessary
-					if (UnmapPhysicalMemory(fourPages) == FALSE) {
+						PVOID castedFourPages = *fourPages;
+						// get middle of fourPages
+						castedFourPages = (unsigned char*)castedFourPages + 0x2000;
+						// now castedFourPages and *buf point to the same memory
+						// add pattern offset
+						castedFourPages = (unsigned char*)castedFourPages + offset;
+
+						unsigned char* EPROCESSBaseOfSystem = (unsigned char*)castedFourPages - _EPROCESS_ImageFileName_offset;
+						unsigned char* UniqueProcessId = EPROCESSBaseOfSystem + _EPROCESS_UniqueProcessId_offset;
+						unsigned char* Token = EPROCESSBaseOfSystem + _EPROCESS_Token_offset;
+						// TODO: Check physical address ranges
+						// Token check might not work as intended
+						if (*(unsigned __int64*)UniqueProcessId == pid && *(unsigned __int64*)Token != 0)
+						{
+							void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
+							printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", patternCount, processName, physicalEPROCESSBase);
+							patternCount++;
+							tLocations[omp_get_thread_num()].push_back((unsigned __int64)physicalEPROCESSBase);
+						}
+
+						//memset(fourPages, 0, 0x4000); unnecessary
+						if (UnmapPhysicalMemory(fourPages) == FALSE) {
+							printf("[!] UnmapPhysicalMemory failed\n");
+							return -1;
+						}
+					}
+					castedBuf = (unsigned char*)castedBuf + 1;
+				}
+
+				maped_size = maped_size + 0x1000;
+				if (maped_size % MEMORY_MAPED_SIZE == 0)
+				{
+					offset_into_mapped_area = 0;
+					//memset(buf, 0, MEMORY_MAPED_SIZE); unnecessary
+					if (UnmapPhysicalMemory(buf) == FALSE) {
 						printf("[!] UnmapPhysicalMemory failed\n");
 						return -1;
 					}
+					//printf("Unmap at page: %p\n", page);
 				}
-				castedBuf = (unsigned char*)castedBuf + 1;
+				offset_into_mapped_area += 0x1000;
 			}
-
-			maped_size = maped_size + 0x1000;
-			if (maped_size % MEMORY_MAPED_SIZE == 0)
-			{
-				offset_into_mapped_area = 0;
-				//memset(buf, 0, MEMORY_MAPED_SIZE); unnecessary
-				if (UnmapPhysicalMemory(buf) == FALSE) {
-					printf("[!] UnmapPhysicalMemory failed\n");
-					return -1;
-				}
-				//printf("Unmap at page: %p\n", page);
-			}
-			offset_into_mapped_area += 0x1000;
+		}
+		for (int i = 0; i < THREADS; i++) {
+			locations.insert(locations.end(), tLocations[i].begin(), tLocations[i].end());
 		}
 	}
 	printf("[+] Scanned through every physical memory region\n");
