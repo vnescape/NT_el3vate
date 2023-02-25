@@ -257,7 +257,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 		{
 			if (maped_size % MEMORY_MAPED_SIZE == 0) {
 				offset_into_mapped_area = 0;
-				int correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE;
+				unsigned __int64 correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE;
 				if (page + MEMORY_MAPED_SIZE > end) {
 					correct_MEMORY_MAPED_SIZE = MEMORY_MAPED_SIZE - (page + MEMORY_MAPED_SIZE - end);
 				}
