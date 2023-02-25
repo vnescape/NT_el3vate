@@ -316,7 +316,6 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDL
 		if (processName[i] == '\0') { break; }
 		pattern[i] = processName[i];
 	}
-	unsigned int patternLength = 16;
 
 	memRegionsCount = GetPhysicalMemoryLayout(NULL);
 	if (memRegionsCount == -1) {
@@ -357,7 +356,6 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDL
 		exit(EXIT_FAILURE);
 	}
 
-	unsigned int patternCount = 0;
 	// go through mapped physical memory regions backwards as _EPROCESS is probabilistically at higher addresses
 	for (int i = memRegionsCount - 1; i >= 0; i--) {
 		unsigned __int64 start = memRegion[i].address;
