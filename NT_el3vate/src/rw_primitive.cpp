@@ -22,7 +22,7 @@ using myNtUnmapViewOfSection = NTSTATUS(NTAPI*)(
 	);
 myNtUnmapViewOfSection fNtUnmapViewOfSection = (myNtUnmapViewOfSection)(GetProcAddress(GetModuleHandleA("ntdll"), "NtUnmapViewOfSection"));
 
-
+// Tries to map "Address" into VirtualAddress via the PhysicalMemory HANDLE and the Driver
 BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length, PVOID* VirtualAddress)
 {
 	NTSTATUS			ntStatus;
@@ -46,13 +46,14 @@ BOOLEAN MapPhysicalMemory(HANDLE PhysicalMemory, __int64 Address, SIZE_T Length,
 	return true;
 }
 
-BOOLEAN UnmapPhysicalMemory(PVOID* buffer) {
+// Tries to unmap section of physical memory
+BOOLEAN UnmapPhysicalMemory(PVOID* VirtualAddress) {
 	NTSTATUS	ntStatus;
 
 	ntStatus = fNtUnmapViewOfSection
 	(
 		GetCurrentProcess(),
-		*buffer
+		*VirtualAddress
 	);
 	// returns STATUS_NOT_MAPPED_VIEW(0xC0000019)...
 	if (!NT_SUCCESS(ntStatus)) return false;
