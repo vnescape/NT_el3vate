@@ -292,7 +292,6 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDL
 	{
 		if (t.joinable()) {
 			t.join();
-			// TODO: error handling
 		}
 	}
 
