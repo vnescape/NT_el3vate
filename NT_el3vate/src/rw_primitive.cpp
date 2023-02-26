@@ -3,7 +3,7 @@
 #include <vector>
 #include <thread>
 
-#define numThreads 8
+#define numThreads 20
 
 using myNtMapViewOfSection = NTSTATUS(NTAPI*)(
 	HANDLE SectionHandle,
@@ -136,7 +136,7 @@ void GoThroughPages(const char* processName, int pid, HANDLE hPhysicalMemory,
 	unsigned __int64 maped_size = 0;
 	unsigned __int64 offset_into_mapped_area = 0;
 	// go through each page in memory region
-	for (unsigned __int64 page = start; page < end; page = page + (numThreads * 0x1000))
+	for (unsigned __int64 page = start; page < end; page = page + 0x1000)
 	{
 		if (maped_size % MEMORY_MAPED_SIZE == 0) {
 			offset_into_mapped_area = 0;
@@ -272,6 +272,9 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDL
 		exit(EXIT_FAILURE);
 	}
 
+	// Multithreading
+	std::vector<std::thread> threads;
+	std::vector<unsigned __int64> accLocations[numThreads];
 	// go through mapped physical memory regions backwards as _EPROCESS is probabilistically at higher addresses
 	for (int i = memRegionsCount - 1; i >= 0; i--) {
 		unsigned __int64 start = memRegion[i].address;
@@ -279,30 +282,22 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName, int pid, HANDL
 		printf("%p - %p\n", (void*)start, (void*)end);
 		fflush(stdout);
 
-		// Multithreading
-		std::vector<std::thread> threads;
-		std::vector<unsigned __int64> accLocations[numThreads];
+		threads.push_back(std::thread(
+			GoThroughPages, processName, pid,
+			hPhysicalMemory, i, std::ref(accLocations[i]),
+			start, end));
+	}
+	// Join threads
+	for (std::thread& t : threads)
+	{
+		if (t.joinable()) {
+			t.join();
+			// TODO: error handling
+		}
+	}
 
-		// Start threads
-		for (int threadID = 0; threadID < numThreads; threadID++)
-		{
-			threads.push_back(std::thread(
-				GoThroughPages, processName, pid,
-				hPhysicalMemory, threadID, std::ref(accLocations[threadID]),
-				start + (threadID * 0x1000), end));
-		}
-		// Join threads
-		for (std::thread& t : threads)
-		{
-			if (t.joinable()) {
-				t.join();
-				// TODO: error handling
-			}
-		}
-
-		for (int j = 0; j < numThreads; j++) {
-			locations.insert(locations.end(), accLocations[j].begin(), accLocations[j].end());
-		}
+	for (int j = 0; j < numThreads; j++) {
+		locations.insert(locations.end(), accLocations[j].begin(), accLocations[j].end());
 	}
 	printf("[+] Scanned through every physical memory region\n");
 
