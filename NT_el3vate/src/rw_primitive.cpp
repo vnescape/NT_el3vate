@@ -194,8 +194,10 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	return occurrences;
 }
 
-unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
+// returns occurrences of pattern. outSize should be greater then occurences otherwise outLocations will not be filled with all locations
+int GetEPROCESSPhysicalBase(const char* processName, int pid, HANDLE hPhysicalMemory, unsigned __int64* outLocations, int outSize) {
 
+	int occurrences = 0;
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
 	unsigned char pattern[16] = { 0 };
@@ -308,7 +310,10 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 						void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
 						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", patternCount, processName, physicalEPROCESSBase);
 						patternCount++;
-						locations.push_back((unsigned __int64)physicalEPROCESSBase);
+						if (occurrences < outSize) {
+							outLocations[occurrences] = (unsigned __int64)physicalEPROCESSBase;
+						}
+						occurrences++;
 					}
 
 					//memset(fourPages, 0, 0x4000); unnecessary
@@ -339,7 +344,7 @@ unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDL
 	free(memRegion);
 	free(fourPages);
 	free(buf);
-	return 0;
+	return occurrences;
 }
 
 int readPhysical(unsigned __int64 address, const void* buf, size_t count)

