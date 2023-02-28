@@ -164,28 +164,22 @@ int GetWindowsOffsets()
 		return -1;
 	}
 
-	switch (lpVersionInformation.dwBuildNumber)
-	{
-	case 22621:
+	DWORD version = lpVersionInformation.dwBuildNumber;
+	if (22000 <= version && version <= 22621) {
 		// Those offsets are for Windows 11 22H2
 		_EPROCESS_ImageFileName_offset = 0x5a8;
 		_EPROCESS_UniqueProcessId_offset = 0x440;
 		_EPROCESS_Token_offset = 0x4b8;
-	case 19045: 
+	}
+	else if (1903 <= version && version < 22000) {
 		// Those offsets are for Windows 10 21H2
 		_EPROCESS_ImageFileName_offset = 0x5a8;
 		_EPROCESS_UniqueProcessId_offset = 0x440;
 		_EPROCESS_Token_offset = 0x4b8;
-		break;
-	case 19044:
-		_EPROCESS_ImageFileName_offset = 0x5a8;
-		_EPROCESS_UniqueProcessId_offset = 0x440;
-		_EPROCESS_Token_offset = 0x4b8;
-		break;
-	default:
+	}
+	else {
 		fprintf(stderr, "[!] No windows offsets found for this windows version: %lu.\n", lpVersionInformation.dwBuildNumber);
 		return -1;
-		break;
 	}
 	printf("[+] Found Windows offset for build %lu.\n", lpVersionInformation.dwBuildNumber);
 	return 0;
