@@ -102,9 +102,11 @@ int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory) {
 
 	return 0;
 }
-
-int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
+// returns occurrences of pattern. outSize should be greater then occurences otherwise outLocations will not be filled with all locations
+int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, unsigned __int64* outLocations, int outSize) {
 	int memRegionsCount = -1;
+	int occurrences = 0;
+
 	printf("[ ] Search for pattern: \"%s\"\n", pattern);
 
 	// First get the count of the memory regions
@@ -169,7 +171,10 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
 					unsigned __int64 patternLocation = page + offset;
-					locations.push_back(patternLocation);
+					if (occurrences < outSize) {
+						outLocations[occurrences] = patternLocation;
+					}
+					occurrences++;
 					printf("[%d] Found pattern at: %p\n", patternCount,(void*)(page + offset));
 					patternCount++;
 				}
@@ -186,7 +191,7 @@ int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength,
 	free(memRegion);
 	free(fourPages);
 	free(buf);
-	return 0;
+	return occurrences;
 }
 
 unsigned __int64 GetEPROCESSPhysicalBase(const char* processName ,int pid ,HANDLE hPhysicalMemory, std::vector <unsigned __int64>& locations) {
