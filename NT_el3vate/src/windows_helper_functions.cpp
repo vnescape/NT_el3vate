@@ -154,7 +154,12 @@ int GetWindowsOffsets()
 	using myNtRtlGetVersion = NTSTATUS(NTAPI*)(
 		PRTL_OSVERSIONINFOW lpVersionInformation
 		);
-	myNtRtlGetVersion fNtRtlGetVersion = (myNtRtlGetVersion)(GetProcAddress(GetModuleHandleA("ntdll"), "RtlGetVersion"));
+	HMODULE ntdllHandle = GetModuleHandleA("ntdll");
+	if (ntdllHandle == NULL) {
+		fprintf(stderr, "[!] GetModuleHandleA failed.\n");
+		return -1;
+	}
+	myNtRtlGetVersion fNtRtlGetVersion = (myNtRtlGetVersion)(GetProcAddress(ntdllHandle, "RtlGetVersion"));
 	RTL_OSVERSIONINFOW lpVersionInformation = { 0 };
 	lpVersionInformation.dwOSVersionInfoSize =sizeof(RTL_OSVERSIONINFOW);
 	NTSTATUS status = fNtRtlGetVersion(&lpVersionInformation);
