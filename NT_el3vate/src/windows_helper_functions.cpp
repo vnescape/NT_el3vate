@@ -177,6 +177,11 @@ int GetWindowsOffsets()
 		_EPROCESS_UniqueProcessId_offset = 0x440;
 		_EPROCESS_Token_offset = 0x4b8;
 		break;
+	case 19044:
+		_EPROCESS_ImageFileName_offset = 0x5a8;
+		_EPROCESS_UniqueProcessId_offset = 0x440;
+		_EPROCESS_Token_offset = 0x4b8;
+		break;
 	default:
 		fprintf(stderr, "[!] No windows offsets found for this windows version: %lu.\n", lpVersionInformation.dwBuildNumber);
 		return -1;
