@@ -35,6 +35,7 @@ int main(int argc, char** argv)
 	system("whoami");
 	if (GetWindowsOffsets() == -1) {
 		fprintf(stderr, "[!] GetWindowsOffsets() failed");
+		return EXIT_FAILURE;
 	}
 
 	HANDLE device = INVALID_HANDLE_VALUE;

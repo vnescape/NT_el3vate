@@ -178,7 +178,7 @@ int GetWindowsOffsets()
 		_EPROCESS_Token_offset = 0x4b8;
 		break;
 	default:
-		fprintf(stderr, "[!] No windows offsets found for this windows version.\n");
+		fprintf(stderr, "[!] No windows offsets found for this windows version: %lu.\n", lpVersionInformation.dwBuildNumber);
 		return -1;
 		break;
 	}
