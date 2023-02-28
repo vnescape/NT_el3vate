@@ -282,7 +282,6 @@ int GetEPROCESSPhysicalBase(const char* processName, int pid, HANDLE hPhysicalMe
 			// go through page byte by byte and search for pattern
 			for (unsigned int offset = 0; offset < (0xfff - patternLength); offset++)
 			{
-				
 				if (memcmp(castedBuf, pattern, patternLength) == 0)
 				{
 					// Try mapping 4 pages so the struct can fit into the mapped region
