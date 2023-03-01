@@ -57,13 +57,13 @@ int main(int argc, char** argv)
 
 	if (device == INVALID_HANDLE_VALUE)
 	{
-		fprintf(stderr, "> Could not open device: 0x%lX\n", GetLastError());
-		return FALSE;
+		fprintf(stderr, "> Could not open device 'ucorew64': 0x%lX\n", GetLastError());
+		return EXIT_FAILURE;
 	}
 	HANDLE hPhysicalMemory = (HANDLE)calloc(1, sizeof(HANDLE));
 	if (hPhysicalMemory == NULL) {
 		fprintf(stderr, "[!] calloc() failed");
-		return FALSE;
+		return EXIT_FAILURE;
 	}
 	printf("[ ] Calling IOCTL_MapPhysicalMemoryToLinearSpace 0x%X\n", IOCTL_MapPhysicalMemoryToLinearSpace);
 	status = DeviceIoControl(device, IOCTL_MapPhysicalMemoryToLinearSpace, hPhysicalMemory, sizeof(hPhysicalMemory),
