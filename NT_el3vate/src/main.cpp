@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 {
 
 	if (argc < 2) {
-		printf("Usage: .\\NT_el3vate.exe <processName>.exe \n");
+		fprintf(stderr,"Usage: .\\NT_el3vate.exe <processName>.exe \n");
 		system("pause");
 		return EXIT_FAILURE;
 	}
@@ -58,6 +58,7 @@ int main(int argc, char** argv)
 	if (device == INVALID_HANDLE_VALUE)
 	{
 		fprintf(stderr, "> Could not open device 'ucorew64': 0x%lX\n", GetLastError());
+		fprintf(stderr, "> Driver 'UCOREW64.SYS' SHA-256: a7c8f4faf3cbb088cac7753d81f8ec4c38ccb97cd9da817741f49272e8d01200 not found\n");
 		return EXIT_FAILURE;
 	}
 	HANDLE hPhysicalMemory = (HANDLE)calloc(1, sizeof(HANDLE));
