@@ -351,7 +351,6 @@ int GetEPROCESSPhysicalBase(const char* processName, int pid, HANDLE hPhysicalMe
 int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName2, int pid1, int pid2, HANDLE hPhysicalMemory, unsigned __int64* outLocations1, unsigned __int64* outLocations2, int* outSize1, int* outSize2)
 {
 
-	int occurrences = 0;
 	int memRegionsCount = -1;
 	//UCHAR ImageFileName[15];
 	unsigned char pattern1[16] = { 0 };
@@ -468,17 +467,15 @@ int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName
 					if (*(unsigned __int64*)UniqueProcessId == pid1 && *(unsigned __int64*)Token != 0)
 					{
 						void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
-						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", patternCount, processName1, physicalEPROCESSBase);
-						patternCount++;
-						outLocations1[occurrences] = (unsigned __int64)physicalEPROCESSBase;
+						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", *outSize1, processName1, physicalEPROCESSBase);
+						outLocations1[*outSize1] = (unsigned __int64)physicalEPROCESSBase;
 						*outSize1 = *outSize1 + 1; 
 					}
-					if (*(unsigned __int64*)UniqueProcessId == pid1 && *(unsigned __int64*)Token != 0)
+					if (*(unsigned __int64*)UniqueProcessId == pid2 && *(unsigned __int64*)Token != 0)
 					{
 						void* physicalEPROCESSBase = (void*)(page + offset - _EPROCESS_ImageFileName_offset);
-						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", patternCount, processName2, physicalEPROCESSBase);
-						patternCount++;
-						outLocations2[occurrences] = (unsigned __int64)physicalEPROCESSBase;
+						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", *outSize2, processName2, physicalEPROCESSBase);
+						outLocations2[*outSize2] = (unsigned __int64)physicalEPROCESSBase;
 						*outSize2 = *outSize2 + 1;
 					}
 
@@ -510,7 +507,7 @@ int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName
 	free(memRegion);
 	free(fourPages);
 	free(buf);
-	return occurrences;
+	return 0;
 }
 
 int readPhysical(unsigned __int64 address, const void* buf, size_t count)
