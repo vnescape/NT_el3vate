@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 {
 
 	if (argc < 2) {
-		printf("Usage: .\\NT_el3vate.exe <processName>\n");
+		printf("Usage: .\\NT_el3vate.exe <processName>.exe \n");
 		system("pause");
 		return EXIT_FAILURE;
 	}
