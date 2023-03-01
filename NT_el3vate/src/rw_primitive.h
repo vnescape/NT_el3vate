@@ -26,6 +26,6 @@ BOOLEAN UnmapPhysicalMemory(PVOID* buffer);
 int GetDevicePhysicalMemoryHandle(LPCWSTR driverName, HANDLE* hPhysicalMemory);
 int searchPhysicalMemory(unsigned char* pattern, unsigned __int64 patternLength, HANDLE hPhysicalMemory, unsigned __int64* outLocations, int outSize);
 int GetEPROCESSPhysicalBase(const char* processName, int pid, HANDLE hPhysicalMemory, unsigned __int64* outLocations, int outSize);
-int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName2, int pid1, int pid2, HANDLE hPhysicalMemory, unsigned __int64* outLocations1, unsigned __int64* outLocations2, int outSize1, int outSize2);
+int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName2, int pid1, int pid2, HANDLE hPhysicalMemory, unsigned __int64* outLocations1, unsigned __int64* outLocations2, int* outSize1, int* outSize2);
 int readPhysical(unsigned __int64 address, const void* buf, size_t count);
 int writePhysical(unsigned __int64 address, const void* buf, size_t count);

