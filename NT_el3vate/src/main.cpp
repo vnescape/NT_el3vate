@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 
 	printf("[+] Got procId and procName:\n");
 	printf("    |- procId: %d\n ", procId);
-	printf("   |- procName: %s", procName.c_str());
+	printf("   |- procName: %s\n", procName.c_str());
 
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
