@@ -77,9 +77,9 @@ int main(int argc, char** argv)
 		procId = std::stol(argvW[1]);
 	}
 
-	std::cout << "[+] Got procId and procName: " << std::endl;
-	std::cout << "    |- procId: " << procId << std::endl;
-	std::cout << "    |- procName: " << procName << std::endl;
+	printf("[+] Got procId and procName:\n");
+	printf("    |- procId: %d\n ", procId);
+	printf("    |- procName: ", procName.c_str());
 
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
