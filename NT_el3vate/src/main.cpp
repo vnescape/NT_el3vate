@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 
 	printf("[+] Got procId and procName:\n");
 	printf("    |- procId: %d\n ", procId);
-	printf("    |- procName: ", procName.c_str());
+	printf("   |- procName: %s", procName.c_str());
 
 	// measure execution time of program
 	auto start = std::chrono::high_resolution_clock::now();
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
 			return -1;
 		}
 	}
-	printf("[+] Replaced %s Token with System Token\n", targetProcess);
+	printf("[+] Replaced %s Token with System Token\n", procName.c_str());
 	
 	free(buf);
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
