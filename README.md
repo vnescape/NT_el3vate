@@ -1,5 +1,5 @@
 # NT_el3vate
-A utility to elevate any process to "nt authority\system". This does not pose any threat as the program requires Administrator privileges to begin with. According to Micrsofot: "Administrator-to-kernel is not a security boundary." (https://www.microsoft.com/en-us/msrc/windows-security-servicing-criteria)
+A utility to elevate any process to "nt authority\system". This does not pose any threat as the program requires Administrator privileges to begin with. According to Microsoft: "Administrator-to-kernel is not a security boundary." (https://www.microsoft.com/en-us/msrc/windows-security-servicing-criteria)
 
 ## Usage
 First you need to load the driver UCOREW64.SYS (SHA-256:a7c8f4faf3cbb088cac7753d81f8ec4c38ccb97cd9da817741f49272e8d01200) onto your system.
