@@ -348,7 +348,7 @@ int GetEPROCESSPhysicalBase(const char* processName, int pid, HANDLE hPhysicalMe
 
 // outLocation will store an array of addresses and outSize the corresponding size of the array
 // Caller must ensure that outLocations is large enough
-int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName2, int pid1, int pid2, HANDLE hPhysicalMemory, unsigned __int64* outLocations1, unsigned __int64* outLocations2, int* outSize1, int* outSize2)
+int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName2, int pid1, int pid2, HANDLE hPhysicalMemory, unsigned __int64* outLocations1, unsigned __int64* outLocations2, int* outSize1, int* outSize2, int bufferSize)
 {
 
 	int memRegionsCount = -1;
@@ -470,6 +470,8 @@ int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName
 						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", *outSize1, processName1, physicalEPROCESSBase);
 						outLocations1[*outSize1] = (unsigned __int64)physicalEPROCESSBase;
 						*outSize1 = *outSize1 + 1; 
+						if (*outSize1 >= bufferSize)
+							return -1;
 					}
 					if (*(unsigned __int64*)UniqueProcessId == pid2 && *(unsigned __int64*)Token != 0)
 					{
@@ -477,6 +479,8 @@ int GetTwoEPROCESSPhysicalBase(const char* processName1, const char* processName
 						printf("[%d] Found EPROCESS Base of \"%s\" at: %p\n", *outSize2, processName2, physicalEPROCESSBase);
 						outLocations2[*outSize2] = (unsigned __int64)physicalEPROCESSBase;
 						*outSize2 = *outSize2 + 1;
+						if (*outSize2 >= bufferSize)
+							return -1;
 					}
 
 					//memset(fourPages, 0, 0x4000); unnecessary

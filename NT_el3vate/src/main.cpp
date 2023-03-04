@@ -124,12 +124,14 @@ int main(int argc, char** argv)
 	}
 	int EPROCESS_SYSTEM_size = 0;
 	int EPROCESS_target_size = 0;
-	unsigned __int64 EPROCESS_SYSTEM[50]; // 50 should be enough
-	unsigned __int64 EPROCESS_target[50];
+	const int bufferSize = 50;
+
+	unsigned __int64 EPROCESS_SYSTEM[bufferSize]; // 50 should be enough
+	unsigned __int64 EPROCESS_target[bufferSize];
 
 
 	// do some sanity checks with GetEPROCESSPhysicalBase() as there may be some false positives...
-	int res = GetTwoEPROCESSPhysicalBase("System" ,procName.c_str(), 4, procId, hPhysicalMemory, EPROCESS_SYSTEM, EPROCESS_target, &EPROCESS_SYSTEM_size, &EPROCESS_target_size);
+	int res = GetTwoEPROCESSPhysicalBase("System" ,procName.c_str(), 4, procId, hPhysicalMemory, EPROCESS_SYSTEM, EPROCESS_target, &EPROCESS_SYSTEM_size, &EPROCESS_target_size, bufferSize);
 	if (res == -1)
 	{
 		fprintf(stderr, "[!] GetEPROCESSPhysicalBase failed\n");
