@@ -1,5 +1,5 @@
 # NT_el3vate
-A utility to elevate any process to ```nt authority\system```.
+A Windows utility to elevate any process to ```nt authority\system```.
 
 ## Usage
 First you need to load the driver ```UCOREW64.SYS SHA-256:
