@@ -16,7 +16,7 @@ To use the program:
 ## How does it work?
 This program uses a signed driver ```UCOREW64.SYS``` to access ```ZwMapViewOfSection()``` and ```ZwUnmapViewOfSection()```.
 Using these functions, the program searches for the EPROCESS struct in physical memory, taking advantage of the ability to map arbitrary physical memory to the userland program.
-In order to get the physical memory layout, an information leak is used by calculating the memory layout of the registry entry ```"HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory"``` in ```GetPhysicalMemoryLayout()```.
+In order to get the physical memory layout, an information leak is used by calculating the memory layout of the registry entry ```HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory``` in ```GetPhysicalMemoryLayout()```.
 Once the EPROCESS structure has been found for both SYSTEM and <targetProcess>, the system token is copied over to the <targetProcess>, effectively elevating the process to SYSTEM.
 
 ## Threat model
