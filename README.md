@@ -2,7 +2,8 @@
 A utility to elevate any process to ```nt authority\system```.
 
 ## Usage
-First you need to load the driver ```UCOREW64.SYS SHA-256:a7c8f4faf3cbb088cac7753d81f8ec4c38ccb97cd9da817741f49272e8d01200``` onto your system.
+First you need to load the driver ```UCOREW64.SYS SHA-256:
+a7c8f4faf3cbb088cac7753d81f8ec4c38ccb97cd9da817741f49272e8d01200``` onto your system.
 ```
 sc create UCOREW64 binPath=[path to UCOREW64.SYS file] type=kernel
 sc start UCOREW64
