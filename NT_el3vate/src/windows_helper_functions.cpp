@@ -1,7 +1,7 @@
 #include "windows_helper_functions.h"
 
 LPVOID EPROCESS_address(LPVOID ntoskernlBase) {
-	HMODULE hNtoskrl = LoadLibrary(L"ntoskrnl.exe");
+	HMODULE hNtoskrl = LoadLibrary("ntoskrnl.exe");
 	if (hNtoskrl == NULL) {
 		fprintf(stderr, "[!] LoadLibrary failed.\n");
 		return NULL;
@@ -92,8 +92,8 @@ LPVOID GetNToskernlBase(void) {
 // TODO: Does not work for higher RAM ammounts > 4GB
 int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	HKEY hKey = NULL;
-	LPCWSTR subKey = L"HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory";
-	LPCWSTR valueName = L".Translated";
+	LPCSTR subKey = "HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory";
+	LPCSTR valueName = ".Translated";
 	LSTATUS result = NULL;
 	DWORD lpType = NULL;
 	DWORD dwLength = NULL;

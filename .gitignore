@@ -4,6 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # User-specific files
+NT_el3vate/build
 *.rsuser
 *.suo
 *.user
