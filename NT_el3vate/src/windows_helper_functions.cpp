@@ -1,7 +1,7 @@
 #include "windows_helper_functions.h"
 
 LPVOID EPROCESS_address(LPVOID ntoskernlBase) {
-	HMODULE hNtoskrl = LoadLibrary("ntoskrnl.exe");
+	HMODULE hNtoskrl = LoadLibrary(L"ntoskrnl.exe");
 	if (hNtoskrl == NULL) {
 		fprintf(stderr, "[!] LoadLibrary failed.\n");
 		return NULL;
@@ -92,22 +92,22 @@ LPVOID GetNToskernlBase(void) {
 // TODO: Does not work for higher RAM ammounts > 4GB
 int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	HKEY hKey = NULL;
-	LPCSTR subKey = "HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory";
-	LPCSTR valueName = ".Translated";
+	LPCWSTR subKey = L"HARDWARE\\RESOURCEMAP\\System Resources\\Physical Memory";
+	LPCWSTR valueName = L".Translated";
 	LSTATUS result = NULL;
 	DWORD lpType = NULL;
 	DWORD dwLength = NULL;
 	LPBYTE lpData = NULL;
 	int regionCount = 0;
 
-	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &hKey);
+	result = RegOpenKeyExW(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &hKey);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegOpenKeyEx() failed.\n");
 		return -1;
 	}
 
 	// get the required size and store it in dwLength
-	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, NULL, &dwLength);
+	result = RegQueryValueExW(hKey, valueName, NULL, &lpType, NULL, &dwLength);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
 		return -1;
@@ -117,7 +117,7 @@ int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 		fprintf(stderr, "[!] malloc() failed.\n");
 		return -1;
 	}
-	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, lpData, &dwLength);
+	result = RegQueryValueExW(hKey, valueName, NULL, &lpType, lpData, &dwLength);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
 		free(lpData);

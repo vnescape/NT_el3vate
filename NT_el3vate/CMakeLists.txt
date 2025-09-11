@@ -1,6 +1,8 @@
 project(NT_el3vate)
 cmake_minimum_required(VERSION 3.10)
 
+add_compile_definitions(_UNICODE UNICODE)
+
 if (Windows)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif ()
