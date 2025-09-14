@@ -17,8 +17,6 @@ unsigned __int64 _EPROCESS_ImageFileName_offset = 0;
 unsigned __int64 _EPROCESS_UniqueProcessId_offset = 0;
 unsigned __int64 _EPROCESS_Token_offset = 0;
 
-
-
 void printBytes(void* ptr, int size)
 {
 	unsigned char* p = (unsigned char*)ptr;
@@ -59,13 +57,13 @@ int main(int argc, char** argv)
 		{
 			while (Process32Next(snapshot, &entry) == TRUE)
 			{
-				if (wcscmp(entry.szExeFile, argvW[1]) == 0)
+				if (wcscmp((wchar_t *)entry.szExeFile, argvW[1]) == 0)
 				{
 					procId = entry.th32ProcessID;
 				}
 			}
 		}
-		// very importent to close the handle 
+		// very importent to close the handle
 		CloseHandle(snapshot);
 		if (procId == 0) {
 			std::cout << "[-] Could not find process: " << argv[1] << std::endl;

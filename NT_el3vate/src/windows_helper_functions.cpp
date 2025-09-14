@@ -100,14 +100,14 @@ int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 	LPBYTE lpData = NULL;
 	int regionCount = 0;
 
-	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &hKey);
+	result = RegOpenKeyExW(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &hKey);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegOpenKeyEx() failed.\n");
 		return -1;
 	}
 
 	// get the required size and store it in dwLength
-	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, NULL, &dwLength);
+	result = RegQueryValueExW(hKey, valueName, NULL, &lpType, NULL, &dwLength);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
 		return -1;
@@ -117,7 +117,7 @@ int GetPhysicalMemoryLayout(MEMORY_REGION* regions) {
 		fprintf(stderr, "[!] malloc() failed.\n");
 		return -1;
 	}
-	result = RegQueryValueEx(hKey, valueName, NULL, &lpType, lpData, &dwLength);
+	result = RegQueryValueExW(hKey, valueName, NULL, &lpType, lpData, &dwLength);
 	if (result != ERROR_SUCCESS) {
 		fprintf(stderr, "[!] RegQueryValueEx() failed.\n");
 		free(lpData);
