@@ -170,7 +170,13 @@ int GetWindowsOffsets()
 	}
 
 	DWORD version = lpVersionInformation.dwBuildNumber;
-	if (22000 <= version && version <= 22621) {
+	if (26100 <= version && version <= 26100) {
+		// Those offsets are for Windows 11 24H2
+		_EPROCESS_ImageFileName_offset = 0x338;
+		_EPROCESS_UniqueProcessId_offset = 0x1d0;
+		_EPROCESS_Token_offset = 0x248;
+	}
+	else if (22000 <= version && version <= 22621) {
 		// Those offsets are for Windows 11 22H2
 		_EPROCESS_ImageFileName_offset = 0x5a8;
 		_EPROCESS_UniqueProcessId_offset = 0x440;
