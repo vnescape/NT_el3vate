@@ -4,10 +4,8 @@ A Windows utility to elevate any process to ```nt authority\system``` using phys
 ## Compiling
 ```
 cd NT_el3vate
-mkdir build
-cd build
-cmake ..
-cmake --build .
+cmake -B build
+cmake --build build
 ```
 
 ## Usage
